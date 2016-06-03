@@ -1,4 +1,4 @@
-<?php require_once 'vendor/autoload.php';
+<?php
 
 use Moosend\API;
 use Moosend\Payload;
