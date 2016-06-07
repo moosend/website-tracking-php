@@ -1,7 +1,7 @@
 {
     "name": "moosend/tracker",
     "description": "Track website activity for Moosend platform",
-    "type": "package",
+    "type": "library",
     "autoload": {
         "psr-4": {
             "Moosend\\": "src"
