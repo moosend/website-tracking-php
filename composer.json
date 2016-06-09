@@ -1,11 +1,14 @@
 {
     "name": "moosend/tracker",
     "description": "Track website activity for Moosend platform",
-    "type": "library",
+    "type": "lib",
     "autoload": {
         "psr-4": {
             "Moosend\\": "src"
-        }
+        },
+        "files": [
+            "index.php"
+        ]
     },
     "authors": [
         {
@@ -20,6 +23,5 @@
     },
     "require-dev": {
         "phpspec/phpspec": "~2.0"
-    },
-    "ext-curl": "*"
+    }
 }
