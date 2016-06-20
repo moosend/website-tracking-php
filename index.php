@@ -5,6 +5,7 @@ use Moosend\Payload;
 use Moosend\Tracker;
 use Moosend\Cookie;
 use GuzzleHttp\Client;
+use Moosend\TrackerFactory;
 use Ramsey\Uuid\Uuid;
 use Sinergi\BrowserDetector\Language;
 
