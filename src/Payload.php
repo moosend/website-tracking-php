@@ -162,7 +162,7 @@ class Payload
                 $mandatoryProps = [
                     'userId' => $this->userId,
                     'sessionNumber' => $this->getSessionNumberByVisitor(),
-                    'siteId' => '1' //todo make this configurable
+                    'siteId' => $this->siteId
                 ];
 
                 return array_merge($props, $mandatoryProps);
