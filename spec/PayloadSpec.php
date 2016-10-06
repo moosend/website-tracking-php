@@ -6,6 +6,7 @@ use Moosend\Cookie;
 use Moosend\ActionTypes;
 use Moosend\CookieNames;
 use Moosend\VisitorTypes;
+use Moosend\PayloadProperties;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Sinergi\BrowserDetector\Language;
@@ -28,10 +29,9 @@ class PayloadSpec extends ObjectBehavior
     function it_generates_an_identify_payload_by_e_mail()
     {
 
-        $this->getIdentify('some@mail.com')->shouldHaveKeyWithValue('email', 'some@mail.com');
-        $this->getIdentify('some@mail.com')->shouldHaveKey('userId');
-        $this->getIdentify('some@mail.com')->shouldHaveKey('siteId');
-        $this->getIdentify('some@mail.com')->shouldHaveKey('sessionNumber');
+        $this->getIdentify('some@mail.com')->shouldHaveKeyWithValue(PayloadProperties::EMAIL, 'some@mail.com');
+        $this->getIdentify('some@mail.com', 'John Doe')->shouldHaveKey(PayloadProperties::NAME);
+        $this->getIdentify('some@mail.com')->shouldHaveKey(PayloadProperties::SITE_ID);
     }
 
     function it_throws_exception_when_generating_identify_without_e_mail()
@@ -42,7 +42,7 @@ class PayloadSpec extends ObjectBehavior
     function it_generates_an_identify_payload_by_e_mail_and_name()
     {
 
-        $this->getIdentify('some@mail.com', 'John Doe')->shouldHaveKeyWithValue('name', 'John Doe');
+        $this->getIdentify('some@mail.com', 'John Doe')->shouldHaveKeyWithValue(PayloadProperties::NAME, 'John Doe');
     }
 
     function it_generates_an_identify_payload_by_e_mail_and_name_and_extra_properties()
@@ -52,72 +52,65 @@ class PayloadSpec extends ObjectBehavior
             'role' => 'customer'
         ];
 
-        $this->getIdentify('some@mail.com', 'John Doe', $properties)->shouldHaveKeyWithValue('properties', $properties);
+        $this->getIdentify('some@mail.com', 'John Doe', $properties)->shouldHaveKeyWithValue(PayloadProperties::PROPERTIES, $properties);
     }
 
     function it_generates_order_payload_by_itemCode_and_itemPrice()
     {
-
         $propertiesAfter = [
-            'itemCode' => '01',
-            'itemPrice' => '35eur'
+            PayloadProperties::ITEM_CODE => '01',
+            PayloadProperties::ITEM_PRICE => '35eur'
         ];
 
-        $this->getAddToOrder('01', '35eur')->shouldHaveKeyWithValue('properties', $propertiesAfter);
-        $this->getAddToOrder('01', '35eur')->shouldHaveKeyWithValue('actionType', ActionTypes::ADD_TO_ORDER);
-        $this->getAddToOrder('01', '35eur')->shouldHaveKey('siteId');
-        $this->getAddToOrder('01', '35eur')->shouldHaveKey('email');
-        $this->getAddToOrder('01', '35eur')->shouldHaveKey('session');
-        $this->getAddToOrder('01', '35eur')->shouldHaveKey('userId');
+        $this->getAddToOrder('01', '35eur')->shouldHaveKeyWithValue(PayloadProperties::PROPERTIES, $propertiesAfter);
+        $this->getAddToOrder('01', '35eur')->shouldHaveKeyWithValue(PayloadProperties::ACTION_TYPE, ActionTypes::ADD_TO_ORDER);
+        $this->getAddToOrder('01', '35eur')->shouldHaveKey(PayloadProperties::SITE_ID);
+        $this->getAddToOrder('01', '35eur')->shouldHaveKey(PayloadProperties::EMAIL);
+        $this->getAddToOrder('01', '35eur')->shouldHaveKey(PayloadProperties::CONTACT_ID);
     }
 
     function it_generates_order_payload_by_itemCode_itemPrice_and_extra_props()
     {
-
         $propertiesAfter = [
-            'itemCode' => '01',
-            'itemPrice' => '35eur',
+            PayloadProperties::ITEM_CODE => '01',
+            PayloadProperties::ITEM_PRICE => '35eur',
             'color' => 'blue'
         ];
 
-        $this->getAddToOrder('01', '35eur', ['color' => 'blue'])->shouldHaveKeyWithValue('properties', $propertiesAfter);
+        $this->getAddToOrder('01', '35eur', ['color' => 'blue'])->shouldHaveKeyWithValue(PayloadProperties::PROPERTIES, $propertiesAfter);
     }
 
     function it_generates_order_completed_payload()
     {
-
-        $this->getOrderCompleted()->shouldHaveKeyWithValue('actionType', ActionTypes::ORDER_COMPLETED);
-        $this->getOrderCompleted()->shouldHaveKey('siteId');
-        $this->getOrderCompleted()->shouldHaveKey('email');
-        $this->getOrderCompleted()->shouldHaveKey('session');
-        $this->getOrderCompleted()->shouldHaveKey('userId');
+        $this->getOrderCompleted()->shouldHaveKeyWithValue(PayloadProperties::ACTION_TYPE, ActionTypes::ORDER_COMPLETED);
+        $this->getOrderCompleted()->shouldHaveKey(PayloadProperties::SITE_ID);
+        $this->getOrderCompleted()->shouldHaveKey(PayloadProperties::EMAIL);
+        $this->getOrderCompleted()->shouldHaveKey(PayloadProperties::CONTACT_ID);
     }
 
     function it_generates_order_completed_payload_with_extra_props()
     {
-        $this->getOrderCompleted(['color' => 'blue'])->shouldHaveKeyWithValue('properties', ['color' => 'blue']);
+        $this->getOrderCompleted(['color' => 'blue'])->shouldHaveKeyWithValue(PayloadProperties::PROPERTIES, ['color' => 'blue']);
     }
 
     function it_generates_custom_events_payload()
     {
-        $this->getCustom('ORDER_CANCELED')->shouldHaveKeyWithValue('actionType', 'ORDER_CANCELED');
-        $this->getCustom('ORDER_CANCELED')->shouldHaveKey('siteId');
-        $this->getCustom('ORDER_CANCELED')->shouldHaveKey('email');
-        $this->getCustom('ORDER_CANCELED')->shouldHaveKey('session');
-        $this->getCustom('ORDER_CANCELED')->shouldHaveKey('userId');
+        $this->getCustom('ORDER_CANCELED')->shouldHaveKeyWithValue(PayloadProperties::ACTION_TYPE, 'ORDER_CANCELED');
+        $this->getOrderCompleted()->shouldHaveKey(PayloadProperties::SITE_ID);
+        $this->getOrderCompleted()->shouldHaveKey(PayloadProperties::EMAIL);
+        $this->getOrderCompleted()->shouldHaveKey(PayloadProperties::CONTACT_ID);
     }
 
     function it_generates_custom_events_payload_with_extra_props()
     {
-        $this->getCustom('ORDER_CANCELED', ['color' => 'blue'])->shouldHaveKeyWithValue('properties', ['color' => 'blue']);
+        $this->getCustom('ORDER_CANCELED', ['color' => 'blue'])->shouldHaveKeyWithValue(PayloadProperties::PROPERTIES, ['color' => 'blue']);
     }
 
     function it_generates_page_view_payload()
     {
         $this->getPageView('http://someurl.com', ['color' => 'blue'])->shouldHaveKeyWithValue('Url', 'http://someurl.com');
-        $this->getPageView('http://someurl.com', ['color' => 'blue'])->shouldHaveKey('siteId');
-        $this->getPageView('http://someurl.com', ['color' => 'blue'])->shouldHaveKey('email');
-        $this->getPageView('http://someurl.com', ['color' => 'blue'])->shouldHaveKey('session');
-        $this->getPageView('http://someurl.com', ['color' => 'blue'])->shouldHaveKey('userId');
+        $this->getPageView('http://someurl.com', ['color' => 'blue'])->shouldHaveKey(PayloadProperties::SITE_ID);
+        $this->getPageView('http://someurl.com', ['color' => 'blue'])->shouldHaveKey(PayloadProperties::EMAIL);
+        $this->getPageView('http://someurl.com', ['color' => 'blue'])->shouldHaveKey(PayloadProperties::CONTACT_ID);
     }
 }

@@ -15,14 +15,17 @@ class Payload
      * @var Cookie
      */
     private $cookie;
+
     /**
      * @var Language
      */
     private $language;
+
     /**
      * @var
      */
     private $siteId;
+
     /**
      * @var
      */
@@ -30,9 +33,10 @@ class Payload
 
     public function __construct(Cookie $cookie, Language $language, $siteId, $userId)
     {
-        if(empty($siteId) || empty($userId)){
+        if (empty($siteId) || empty($userId)) {
             throw new Exception('$siteId or $userId cannot be empty');
         }
+
         $this->cookie = $cookie;
         $this->language = $language;
         $this->siteId = $siteId;
@@ -56,15 +60,15 @@ class Payload
 
         //props that we will combine with default props
         $props = [
-            'email' => $email
+            PayloadProperties::EMAIL => $email
         ];
 
         if ($name) {
-            $props['name'] = $name;
+            $props[PayloadProperties::NAME] = $name;
         }
 
         if ($properties) {
-            $props['properties'] = $properties;
+            $props[PayloadProperties::PROPERTIES] = $properties;
         }
 
         return $this->getTrackPayload(ActionTypes::IDENTIFY, $props);
@@ -80,16 +84,16 @@ class Payload
      */
     public function getPageView($url, $properties = [])
     {
-        if(empty($url)){
+        if (empty($url)) {
             throw new Exception('url cannot be empty');
         }
 
         $props = [
-            'Url' => $url
+            PayloadProperties::URL => $url
         ];
 
         if ($properties) {
-            $props['properties'] = $properties;
+            $props[PayloadProperties::PROPERTIES] = $properties;
         }
 
         return $this->getTrackPayload(ActionTypes::PAGE_VIEW, $props);
@@ -107,19 +111,19 @@ class Payload
     {
 
         if (!$itemCode || !$itemPrice) {
-            throw new InvalidArgumentException('itemCode and itemPrice cannot be empty or null');
+            throw new InvalidArgumentException(PayloadProperties::ITEM_CODE . ' and ' . PayloadProperties::ITEM_PRICE . ' cannot be empty or null');
         }
 
         //props that we will combine with default props
         $props = [
-            'properties' => [
-                'itemCode' => $itemCode,
-                'itemPrice' => $itemPrice
+            PayloadProperties::PROPERTIES => [
+                PayloadProperties::ITEM_CODE => $itemCode,
+                PayloadProperties::ITEM_PRICE => $itemPrice
             ]
         ];
 
         if ($properties) {
-            $props['properties'] = array_merge($props['properties'], $properties);
+            $props[PayloadProperties::PROPERTIES] = array_merge($props[PayloadProperties::PROPERTIES], $properties);
         }
 
         return $this->getTrackPayload(ActionTypes::ADD_TO_ORDER, $props);
@@ -133,7 +137,7 @@ class Payload
      */
     public function getOrderCompleted($properties = [])
     {
-        $properties = empty($properties) ? [] : ['properties' => $properties];
+        $properties = empty($properties) ? [] : [PayloadProperties::PROPERTIES => $properties];
 
         return $this->getTrackPayload(ActionTypes::ORDER_COMPLETED, $properties);
     }
@@ -148,7 +152,7 @@ class Payload
     public function getCustom($event, $properties = [])
     {
 
-        $properties = empty($properties) ? [] : ['properties' => $properties];
+        $properties = empty($properties) ? [] : [PayloadProperties::PROPERTIES => $properties];
 
         return $this->getTrackPayload($event, $properties);
     }
@@ -160,9 +164,8 @@ class Payload
             case ActionTypes::IDENTIFY:
 
                 $mandatoryProps = [
-                    'userId' => $this->userId,
-                    'sessionNumber' => $this->getSessionNumberByVisitor(),
-                    'siteId' => $this->siteId
+                    PayloadProperties::CONTACT_ID => $this->userId,
+                    PayloadProperties::SITE_ID => $this->siteId
                 ];
 
                 return array_merge($props, $mandatoryProps);
@@ -197,19 +200,10 @@ class Payload
         $email = $this->cookie->getCookie(CookieNames::USER_EMAIL);
 
         return [
-            'actionType' => $actionType,
-            'userId' => $this->userId,
-            'siteId' => $this->siteId, //todo make this configurable
-            'email' => $email,
-            'session' => [
-                'language' => $this->language->getLanguageLocale(),
-                'number' => $this->getSessionNumberByVisitor()
-            ],
+            PayloadProperties::ACTION_TYPE => $actionType,
+            PayloadProperties::CONTACT_ID => $this->userId,
+            PayloadProperties::SITE_ID => $this->siteId,
+            PayloadProperties::EMAIL => $email
         ];
-    }
-
-    private function getSessionNumberByVisitor()
-    {
-        return $this->cookie->getCookie(CookieNames::VISITOR_TYPE) == VisitorTypes::VISITOR_TYPE_RETURNED ? 2 : 1;
     }
 }
