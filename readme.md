@@ -9,7 +9,7 @@ To install all dependencies run : `composer install` from your terminal / cmd, i
 This project relies on [phpspec](http://www.phpspec.net/en/latest/), an unit testing and BDD toolset. To run all tests type this on your terminal / cmd
 	
 ~~~~
-vendor/bin/phpspec run
+composer test
 ~~~~
 
 #### Initialisation
@@ -45,8 +45,13 @@ $tracker->identify('some@mail.com', 'John Doe', ['favourite-color' => 'blue']); 
 $tracker->pageView('http://example.com');
 
 //add to order
-$tracker->addToOrder('itemCode', 'itemPrice', $props);
+$tracker->addToOrder('itemCode', 'itemPrice', 'itemUrl', 'itemName', 'itemImage', $props);
 
 //order completed
-$tracker->orderCompleted($props);
+$order = $tracker->createOrder();
+
+$order->addProduct('itemCode', 'itemPrice', 'itemUrl', 'itemName', 'itemImage', $props);
+$order->addProduct('itemCode', 'itemPrice', 'itemUrl', 'itemName', 'itemImage', $props);
+
+$tracker->orderCompleted($order);
 ~~~~

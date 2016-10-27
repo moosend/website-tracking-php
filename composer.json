@@ -18,10 +18,13 @@
     ],
     "require": {
         "ramsey/uuid": "^3.4",
-        "sinergi/browser-detector": "^6.0",
         "guzzlehttp/guzzle": "^6.2"
     },
     "require-dev": {
         "phpspec/phpspec": "~2.0"
+    },
+    "scripts": {
+        "test": "phpspec run",
+        "start": "php -S localhost:8080"
     }
 }

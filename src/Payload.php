@@ -2,7 +2,7 @@
 
 use InvalidArgumentException;
 use Exception;
-use Sinergi\BrowserDetector\Language;
+use Moosend\Models;
 
 /**
  * Class Payload
@@ -17,11 +17,6 @@ class Payload
     private $cookie;
 
     /**
-     * @var Language
-     */
-    private $language;
-
-    /**
      * @var
      */
     private $siteId;
@@ -31,14 +26,13 @@ class Payload
      */
     private $userId;
 
-    public function __construct(Cookie $cookie, Language $language, $siteId, $userId)
+    public function __construct(Cookie $cookie, $siteId, $userId)
     {
         if (empty($siteId) || empty($userId)) {
             throw new Exception('$siteId or $userId cannot be empty');
         }
 
         $this->cookie = $cookie;
-        $this->language = $language;
         $this->siteId = $siteId;
         $this->userId = $userId;
     }
@@ -102,44 +96,36 @@ class Payload
     /**
      * Generates payload for add to order events
      *
-     * @param $itemCode
-     * @param $itemPrice
-     * @param array $properties
+     * @param Models\Product $product
      * @return array
      */
-    public function getAddToOrder($itemCode, $itemPrice, $properties = [])
+    public function getAddToOrder(Models\Product $product)
     {
-
-        if (!$itemCode || !$itemPrice) {
-            throw new InvalidArgumentException(PayloadProperties::ITEM_CODE . ' and ' . PayloadProperties::ITEM_PRICE . ' cannot be empty or null');
-        }
-
-        //props that we will combine with default props
-        $props = [
-            PayloadProperties::PROPERTIES => [
-                PayloadProperties::ITEM_CODE => $itemCode,
-                PayloadProperties::ITEM_PRICE => $itemPrice
-            ]
-        ];
-
-        if ($properties) {
-            $props[PayloadProperties::PROPERTIES] = array_merge($props[PayloadProperties::PROPERTIES], $properties);
-        }
-
-        return $this->getTrackPayload(ActionTypes::ADD_TO_ORDER, $props);
+        return $this->getTrackPayload(ActionTypes::ADD_TO_ORDER, [
+            PayloadProperties::PROPERTIES =>
+                [
+                    [
+                        PayloadProperties::PRODUCT => $product->toArray()
+                    ]
+                ]
+        ]);
     }
 
     /**
      * Generates payload for order completed events
      *
-     * @param array $properties
+     * @param Models\Order $order
+     * @throws Exception
      * @return array
      */
-    public function getOrderCompleted($properties = [])
+    public function getOrderCompleted(Models\Order $order)
     {
-        $properties = empty($properties) ? [] : [PayloadProperties::PROPERTIES => $properties];
+        if (! $order->hasProducts()) {
 
-        return $this->getTrackPayload(ActionTypes::ORDER_COMPLETED, $properties);
+            throw new \Exception('$order should have at least one product');
+        }
+
+        return $this->getTrackPayload(ActionTypes::ORDER_COMPLETED, [PayloadProperties::PROPERTIES => [[PayloadProperties::PRODUCTS => $order->toArray()]]]);
     }
 
     /**
@@ -157,53 +143,37 @@ class Payload
         return $this->getTrackPayload($event, $properties);
     }
 
-    private function getTrackPayload($actionType, $props)
+    /**
+     * Returns the site id
+     *
+     * @return string
+     * */
+    public function getSiteId()
     {
 
-        switch ($actionType) {
-            case ActionTypes::IDENTIFY:
-
-                $mandatoryProps = [
-                    PayloadProperties::CONTACT_ID => $this->userId,
-                    PayloadProperties::SITE_ID => $this->siteId
-                ];
-
-                return array_merge($props, $mandatoryProps);
-                break;
-
-            case ActionTypes::ADD_TO_ORDER:
-
-                $mandatoryProps = $this->getMandatoryProps($actionType);
-
-                return array_merge($props, $mandatoryProps);
-                break;
-
-            case ActionTypes::ORDER_COMPLETED:
-
-                $mandatoryProps = $this->getMandatoryProps($actionType);
-
-                return array_merge($props, $mandatoryProps);
-                break;
-
-            default:
-
-                $mandatoryProps = $this->getMandatoryProps($actionType);
-
-                return array_merge($props, $mandatoryProps);
-                break;
-
-        }
+        return $this->siteId;
     }
 
-    private function getMandatoryProps($actionType)
+    private function getTrackPayload($actionType, $props)
     {
         $email = $this->cookie->getCookie(CookieNames::USER_EMAIL);
 
-        return [
+        $mandatoryProps = [
             PayloadProperties::ACTION_TYPE => $actionType,
             PayloadProperties::CONTACT_ID => $this->userId,
             PayloadProperties::SITE_ID => $this->siteId,
             PayloadProperties::EMAIL => $email
         ];
+
+        if($this->hasCampaignId()){
+            $mandatoryProps[PayloadProperties::CAMPAIGN_ID] = $this->cookie->getCookie(CookieNames::CAMPAIGN_ID);
+        }
+
+        return array_merge($mandatoryProps, $props);
+    }
+
+    private function hasCampaignId()
+    {
+        return !! $this->cookie->getCookie(CookieNames::CAMPAIGN_ID);
     }
 }

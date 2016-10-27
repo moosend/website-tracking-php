@@ -5,20 +5,22 @@ namespace spec\Moosend;
 use Moosend\Cookie;
 use Moosend\ActionTypes;
 use Moosend\CookieNames;
-use Moosend\VisitorTypes;
+use Moosend\Models\Order;
 use Moosend\PayloadProperties;
+use Moosend\Models\Product;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
-use Sinergi\BrowserDetector\Language;
+use Ramsey\Uuid\Uuid;
 
 class PayloadSpec extends ObjectBehavior
 {
-    function let(Cookie $cookie, Language $language)
+    function let(Cookie $cookie)
     {
-        $this->beConstructedWith($cookie, $language, 'user1', 'site1');
+        $this->beConstructedWith($cookie, 'user1', Uuid::uuid4());
+
         $cookie->getCookie(CookieNames::USER_EMAIL)->willReturn('some@mail.com');
-        $cookie->getCookie(CookieNames::USER_ID)->willReturn('1');
-        $cookie->getCookie(CookieNames::VISITOR_TYPE)->willReturn(VisitorTypes::VISITOR_TYPE_RETURNED);
+        $cookie->getCookie(CookieNames::USER_ID)->willReturn(Uuid::uuid4());
+        $cookie->getCookie(CookieNames::CAMPAIGN_ID)->willReturn(Uuid::uuid4());
     }
 
     function it_is_initializable()
@@ -57,48 +59,77 @@ class PayloadSpec extends ObjectBehavior
 
     function it_generates_order_payload_by_itemCode_and_itemPrice()
     {
+        $itemCode = '123-Code';
+        $itemPrice = 22.45;
+        $itemUrl = 'http://item.com';
+        $itemName = 'T-shirt';
+        $itemImage = 'http://item.com/image';
+        $properties = [ 'color' => 'red' ];
+
         $propertiesAfter = [
-            PayloadProperties::ITEM_CODE => '01',
-            PayloadProperties::ITEM_PRICE => '35eur'
+            [
+                PayloadProperties::PRODUCT => [
+                    PayloadProperties::ITEM_CODE => $itemCode,
+                    PayloadProperties::ITEM_PRICE => $itemPrice,
+                    PayloadProperties::ITEM_URL => $itemUrl,
+                    PayloadProperties::ITEM_NAME => $itemName,
+                    PayloadProperties::ITEM_IMAGE => $itemImage,
+                ]
+            ]
         ];
 
-        $this->getAddToOrder('01', '35eur')->shouldHaveKeyWithValue(PayloadProperties::PROPERTIES, $propertiesAfter);
-        $this->getAddToOrder('01', '35eur')->shouldHaveKeyWithValue(PayloadProperties::ACTION_TYPE, ActionTypes::ADD_TO_ORDER);
-        $this->getAddToOrder('01', '35eur')->shouldHaveKey(PayloadProperties::SITE_ID);
-        $this->getAddToOrder('01', '35eur')->shouldHaveKey(PayloadProperties::EMAIL);
-        $this->getAddToOrder('01', '35eur')->shouldHaveKey(PayloadProperties::CONTACT_ID);
-    }
+        $propertiesAfter[0][PayloadProperties::PRODUCT] = array_merge($properties, $propertiesAfter[0][PayloadProperties::PRODUCT]);
 
-    function it_generates_order_payload_by_itemCode_itemPrice_and_extra_props()
-    {
-        $propertiesAfter = [
-            PayloadProperties::ITEM_CODE => '01',
-            PayloadProperties::ITEM_PRICE => '35eur',
-            'color' => 'blue'
-        ];
+        $product = new Product($itemCode, $itemPrice, $itemUrl, $itemName, $itemImage, $properties);
 
-        $this->getAddToOrder('01', '35eur', ['color' => 'blue'])->shouldHaveKeyWithValue(PayloadProperties::PROPERTIES, $propertiesAfter);
+        $this->getAddToOrder($product)->shouldHaveKeyWithValue(PayloadProperties::PROPERTIES, $propertiesAfter);
+        $this->getAddToOrder($product)->shouldHaveKeyWithValue(PayloadProperties::ACTION_TYPE, ActionTypes::ADD_TO_ORDER);
+        $this->getAddToOrder($product)->shouldHaveKey(PayloadProperties::SITE_ID);
+        $this->getAddToOrder($product)->shouldHaveKey(PayloadProperties::EMAIL);
+        $this->getAddToOrder($product)->shouldHaveKey(PayloadProperties::CONTACT_ID);
     }
 
     function it_generates_order_completed_payload()
     {
-        $this->getOrderCompleted()->shouldHaveKeyWithValue(PayloadProperties::ACTION_TYPE, ActionTypes::ORDER_COMPLETED);
-        $this->getOrderCompleted()->shouldHaveKey(PayloadProperties::SITE_ID);
-        $this->getOrderCompleted()->shouldHaveKey(PayloadProperties::EMAIL);
-        $this->getOrderCompleted()->shouldHaveKey(PayloadProperties::CONTACT_ID);
-    }
+        $itemCode = '123-Code';
+        $itemPrice = 22.45;
+        $itemUrl = 'http://item.com';
+        $itemName = 'T-shirt';
+        $itemImage = 'http://item.com/image';
+        $properties = [ 'color' => 'red' ];
 
-    function it_generates_order_completed_payload_with_extra_props()
-    {
-        $this->getOrderCompleted(['color' => 'blue'])->shouldHaveKeyWithValue(PayloadProperties::PROPERTIES, ['color' => 'blue']);
+        $propertiesAfter = [
+            [
+                PayloadProperties::PRODUCTS => [
+                    [
+                        'color' => $properties['color'],
+                        PayloadProperties::ITEM_CODE => $itemCode,
+                        PayloadProperties::ITEM_PRICE => $itemPrice,
+                        PayloadProperties::ITEM_URL => $itemUrl,
+                        PayloadProperties::ITEM_NAME => $itemName,
+                        PayloadProperties::ITEM_IMAGE => $itemImage
+                    ]
+                ]
+            ]
+        ];
+
+        $order = new Order();
+
+        $order->addProduct($itemCode, $itemPrice, $itemUrl, $itemName, $itemImage, $properties);
+
+        $this->getOrderCompleted($order)->shouldHaveKeyWithValue(PayloadProperties::PROPERTIES, $propertiesAfter);
+        $this->getOrderCompleted($order)->shouldHaveKeyWithValue(PayloadProperties::ACTION_TYPE, ActionTypes::ORDER_COMPLETED);
+        $this->getOrderCompleted($order)->shouldHaveKey(PayloadProperties::SITE_ID);
+        $this->getOrderCompleted($order)->shouldHaveKey(PayloadProperties::EMAIL);
+        $this->getOrderCompleted($order)->shouldHaveKey(PayloadProperties::CONTACT_ID);
     }
 
     function it_generates_custom_events_payload()
     {
         $this->getCustom('ORDER_CANCELED')->shouldHaveKeyWithValue(PayloadProperties::ACTION_TYPE, 'ORDER_CANCELED');
-        $this->getOrderCompleted()->shouldHaveKey(PayloadProperties::SITE_ID);
-        $this->getOrderCompleted()->shouldHaveKey(PayloadProperties::EMAIL);
-        $this->getOrderCompleted()->shouldHaveKey(PayloadProperties::CONTACT_ID);
+        $this->getCustom('ORDER_CANCELED')->shouldHaveKey(PayloadProperties::SITE_ID);
+        $this->getCustom('ORDER_CANCELED')->shouldHaveKey(PayloadProperties::EMAIL);
+        $this->getCustom('ORDER_CANCELED')->shouldHaveKey(PayloadProperties::CONTACT_ID);
     }
 
     function it_generates_custom_events_payload_with_extra_props()

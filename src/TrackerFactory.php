@@ -1,8 +1,8 @@
 <?php namespace Moosend;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\RequestOptions;
 use Ramsey\Uuid\Uuid;
-use Sinergi\BrowserDetector\Language;
 
 /**
  * Class TrackerFactory
@@ -32,9 +32,26 @@ class TrackerFactory {
         $userId = $cookie->getCookie(CookieNames::USER_ID);
         $userId = ! empty($userId) ? $userId : Uuid::uuid4()->toString();
 
-        $payload = new Payload(new Cookie(), new Language(), $siteId, $userId);
+        $payload = new Payload(new Cookie(), $siteId, $userId);
+
+        $requestHeaders = [];
+
+        $browserUserAgent = Browser::getUserAgent();
+        $browserIPAddress = Browser::getRequestIPAddress();
+
+        if(! empty($browserUserAgent)){
+
+            $requestHeaders['X-Original-User-Agent'] = $browserUserAgent;
+        }
+
+        if(! empty($browserIPAddress)){
+
+            $requestHeaders['X-Original-Request-IP-Address'] = $browserIPAddress;
+        }
+
         $client = new Client([
-            'base_uri' => API::ENDPOINT
+            'base_uri' => API::ENDPOINT,
+            RequestOptions::HEADERS => $requestHeaders
         ]);
 
         return new Tracker($cookie, $payload, $client);

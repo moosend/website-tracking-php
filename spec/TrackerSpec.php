@@ -3,8 +3,9 @@
 namespace spec\Moosend;
 
 use GuzzleHttp\Client;
+use Moosend\Models\Order;
+use Moosend\Models\Product;
 use Moosend\Payload;
-use Moosend\VisitorTypes;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Moosend\Cookie;
@@ -27,7 +28,6 @@ class TrackerSpec extends ObjectBehavior
         $cookie->getCookie(CookieNames::USER_ID)->shouldBeCalled();
         $cookie->setCookie(CookieNames::SITE_ID, 'some-site')->shouldBeCalled();
         $cookie->setCookie(CookieNames::USER_ID, Argument::type('string'))->shouldBeCalled();
-        $cookie->setCookie(CookieNames::VISITOR_TYPE, VisitorTypes::VISITOR_TYPE_NEW)->shouldBeCalled();
 
         $this->init('some-site');
     }
@@ -53,13 +53,13 @@ class TrackerSpec extends ObjectBehavior
             'properties' => $props,
         ]);
 
-        $client->request('POST', '/identify', Argument::type('array'))->willReturn([
+        $client->request('POST', 'identify', Argument::type('array'))->willReturn([
             'success' => 'ok'
         ]);
 
         //expectations
         $payload->getIdentify($email, $name, $props)->shouldBeCalled();
-        $client->request('POST', '/identify', Argument::type('array'))->shouldBeCalled();
+        $client->request('POST', 'identify', Argument::type('array'))->shouldBeCalled();
         $cookie->setCookie(CookieNames::USER_EMAIL, $email)->shouldBeCalled();
 
         $this->identify($email, $name, $props);
@@ -67,48 +67,42 @@ class TrackerSpec extends ObjectBehavior
 
     function it_tracks_add_to_order_events($payload, $client)
     {
-        $itemCode = '1';
-        $itemPrice = '33eur';
-        $props = ['color' => 'blue'];
+        $itemCode = '123-Code';
+        $itemPrice = 22.45;
+        $itemUrl = 'http://item.com';
+        $itemName = 'T-shirt';
+        $itemImage = 'http://item.com/image';
+        $properties = [ 'color' => 'red' ];
 
         //stubs
-        $payload->getAddToOrder($itemCode, $itemPrice, $props)->willReturn([
-            'properties' => [
-                'itemCode' => $itemCode,
-                'itemPrice' => $itemPrice,
-                'color' => 'blue',
-            ]
-        ]);
+        $payload->getAddToOrder(Argument::type(Product::class))->willReturn([]);
 
-        $client->request('POST', '/track', Argument::type('array'))->willReturn([
+        $client->request('POST', 'track', Argument::type('array'))->willReturn([
             'success' => 'ok'
         ]);
 
         //expectations
-        $payload->getAddToOrder($itemCode, $itemPrice, $props)->shouldBeCalled();
-        $client->request('POST', '/track', Argument::type('array'))->shouldBeCalled();
+        $payload->getAddToOrder(Argument::type(Product::class))->shouldBeCalled();
+        $client->request('POST', 'track', Argument::type('array'))->shouldBeCalled();
 
-        $this->addToOrder($itemCode, $itemPrice, $props);
+        $this->addToOrder($itemCode, $itemPrice, $itemUrl, $itemName, $itemImage, $properties);
     }
 
     function it_tracks_order_completed_events($payload, $client)
     {
+        $order = new Order();
 
-        $props = ['color' => 'blue'];
+        $payload->getOrderCompleted(Argument::type(Order::class))->willReturn([]);
 
-        $payload->getOrderCompleted($props)->willReturn([
-            'properties' => $props
-        ]);
-
-        $client->request('POST', '/track', Argument::type('array'))->willReturn([
+        $client->request('POST', 'track', Argument::type('array'))->willReturn([
             'success' => 'ok'
         ]);
 
         //expectations
-        $payload->getOrderCompleted($props)->shouldBeCalled();
-        $client->request('POST', '/track', Argument::type('array'))->shouldBeCalled();
+        $payload->getOrderCompleted(Argument::exact($order))->shouldBeCalled();
+        $client->request('POST', 'track', Argument::type('array'))->shouldBeCalled();
 
-        $this->orderCompleted($props);
+        $this->orderCompleted($order);
     }
 
     function it_tracks_page_view_events($payload, $client)
@@ -120,13 +114,13 @@ class TrackerSpec extends ObjectBehavior
             'properties' => $props
         ]);
 
-        $client->request('POST', '/track', Argument::type('array'))->willReturn([
+        $client->request('POST', 'track', Argument::type('array'))->willReturn([
             'success' => 'ok'
         ]);
 
         //expectations
         $payload->getPageView('http://google.com', $props)->shouldBeCalled();
-        $client->request('POST', '/track', Argument::type('array'))->shouldBeCalled();
+        $client->request('POST', 'track', Argument::type('array'))->shouldBeCalled();
 
         $this->pageView('http://google.com', $props);
     }
@@ -138,7 +132,6 @@ class TrackerSpec extends ObjectBehavior
         $cookie->getCookie(CookieNames::USER_ID)->shouldBeCalled();
         $cookie->setCookie(CookieNames::USER_ID, Argument::type('string'))->shouldBeCalled();
         $cookie->setCookie(CookieNames::SITE_ID, 'some-site')->shouldBeCalled();
-        $cookie->setCookie(CookieNames::VISITOR_TYPE, VisitorTypes::VISITOR_TYPE_NEW)->shouldBeCalled();
 
         $this->init('some-site', true);
     }

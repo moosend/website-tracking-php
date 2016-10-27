@@ -3,5 +3,6 @@
 
 class API {
 
-    const ENDPOINT = 'http://statistics-collector-staging.azurewebsites.net';
-} 
+    const ENDPOINT = 'http://moosendtrack.getsandbox.com/';
+    //const ENDPOINT = 'https://events-collector-service-staging-web-01.azurewebsites.net/json/oneway/WebsiteRequest/';
+}
