@@ -16,13 +16,8 @@ composer test
 Before you dive in with sending events you have to create an instance of Tracker first and perform initialisation. This is very important as it wont send any data to the server without a proper initialisation. The init. phase deals with some Cookies that determines if current user is a new visitor or a returned one.
 
 ~~~~
-$cookie = new Moosend\Cookie();
-$payload = new Moosend\Payload(new Moosend\Cookie(), new Sinergi\BrowserDetector\Language());
-$client = new Client([
-    'base_uri' => Moosend\API::ENDPOINT
-]);
-
-$tracker = new Moosend\Tracker($cookie, $payload, $client);
+$trackerFactory = new Moosend\TrackerFactory();
+$tracker = $trackerFactory->create($siteId, $requestUseragent, $requestIpAddress);
 
 $tracker->init('site-id');
 ~~~~
