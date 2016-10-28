@@ -17,11 +17,13 @@ class TrackerFactory {
     /**
      * Creates a Tracker instance
      *
-     * @param $siteId
-     * @return Tracker
+     * @param string $siteId
+     * @param string $userAgent
+     * @param string $requestIPAddress
      * @throws \Exception
+     * @return Tracker
      */
-    public function create($siteId)
+    public function create($siteId, $userAgent = '', $requestIPAddress = '')
     {
         if(empty($siteId)){
             throw new \Exception('Cannot create an instance without a site id');
@@ -36,8 +38,8 @@ class TrackerFactory {
 
         $requestHeaders = [];
 
-        $browserUserAgent = Browser::getUserAgent();
-        $browserIPAddress = Browser::getRequestIPAddress();
+        $browserUserAgent = !empty($userAgent) ? $userAgent : Browser::getUserAgent();
+        $browserIPAddress = !empty($requestIPAddress) ? $requestIPAddress : Browser::getRequestIPAddress();
 
         if(! empty($browserUserAgent)){
 
