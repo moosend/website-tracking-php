@@ -91,7 +91,9 @@ class TrackerSpec extends ObjectBehavior
 
     function it_tracks_order_completed_events($payload, $client)
     {
-        $order = new Order();
+        $orderTotal = 120;
+
+        $order = new Order($orderTotal);
 
         $payload->getOrderCompleted(Argument::type(Order::class))->willReturn([]);
 

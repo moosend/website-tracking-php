@@ -104,8 +104,11 @@ class PayloadSpec extends ObjectBehavior
         $itemImage = 'http://item.com/image';
         $properties = ['color' => 'red'];
 
+        $orderTotal = 120;
+
         $propertiesAfter = [
             [
+                PayloadProperties::ORDER_TOTAL_PRICE => $orderTotal,
                 PayloadProperties::PRODUCTS => [
                     [
                         'color' => $properties['color'],
@@ -121,7 +124,7 @@ class PayloadSpec extends ObjectBehavior
             ]
         ];
 
-        $order = new Order();
+        $order = new Order($orderTotal);
 
         $order->addProduct($itemCode, $itemPrice, $itemUrl, $itemQuantity, $itemTotalprice, $itemName, $itemImage, $properties);
 

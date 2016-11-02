@@ -120,12 +120,19 @@ class Payload
      */
     public function getOrderCompleted(Models\Order $order)
     {
-        if (! $order->hasProducts()) {
+        if (!$order->hasProducts()) {
 
             throw new \Exception('$order should have at least one product');
         }
 
-        return $this->getTrackPayload(ActionTypes::ORDER_COMPLETED, [PayloadProperties::PROPERTIES => [[PayloadProperties::PRODUCTS => $order->toArray()]]]);
+        return $this->getTrackPayload(ActionTypes::ORDER_COMPLETED, [
+            PayloadProperties::PROPERTIES => [
+                [
+                    PayloadProperties::ORDER_TOTAL_PRICE => $order->getOrderTotal(),
+                    PayloadProperties::PRODUCTS => $order->toArray()
+                ]
+            ]
+        ]);
     }
 
     /**
@@ -165,7 +172,7 @@ class Payload
             PayloadProperties::EMAIL => $email
         ];
 
-        if($this->hasCampaignId()){
+        if ($this->hasCampaignId()) {
             $mandatoryProps[PayloadProperties::CAMPAIGN_ID] = $this->cookie->getCookie(CookieNames::CAMPAIGN_ID);
         }
 
@@ -174,6 +181,6 @@ class Payload
 
     private function hasCampaignId()
     {
-        return !! $this->cookie->getCookie(CookieNames::CAMPAIGN_ID);
+        return !!$this->cookie->getCookie(CookieNames::CAMPAIGN_ID);
     }
 }

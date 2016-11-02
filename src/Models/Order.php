@@ -4,6 +4,23 @@ class Order implements SerializablePayload
 {
 
     protected $order = [];
+    /**
+     * @var
+     */
+    private $orderTotal;
+
+    /**
+     * @param number $orderTotal
+     */
+    public function __construct($orderTotal){
+
+        if(!is_numeric($orderTotal)){
+
+            throw new \InvalidArgumentException('$orderTotal should be numeric type');
+        }
+
+        $this->orderTotal = $orderTotal;
+    }
 
     /**
      * Adds a new product to order collection
@@ -36,6 +53,11 @@ class Order implements SerializablePayload
 
             return $product->toArray();
         }, $this->order);
+    }
+
+    public function getOrderTotal()
+    {
+        return $this->orderTotal;
     }
 
     /**

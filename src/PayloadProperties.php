@@ -1,7 +1,8 @@
 <?php namespace Moosend;
 
 
-class PayloadProperties {
+class PayloadProperties
+{
 
     const CONTACT_ID = 'ContactId';
     const EMAIL = 'ContactEmailAddress';
@@ -20,4 +21,5 @@ class PayloadProperties {
     const PRODUCTS = 'products';
     const PRODUCT = 'product';
     const CAMPAIGN_ID = 'CampaignId';
+    const ORDER_TOTAL_PRICE = 'totalPrice';
 }

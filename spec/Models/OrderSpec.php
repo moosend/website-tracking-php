@@ -8,9 +8,9 @@ use Prophecy\Argument;
 
 class OrderSpec extends ObjectBehavior
 {
-    function it_is_initializable()
+    public function let()
     {
-        $this->shouldHaveType('Moosend\Models\Order');
+        $this->beConstructedWith(120);
     }
 
     function it_returns_an_array_created_from_products()
@@ -33,5 +33,10 @@ class OrderSpec extends ObjectBehavior
         $this->toArray()->shouldReturn([
             $product->toArray()
         ]);
+    }
+
+    function it_returns_order_total()
+    {
+        $this->getOrderTotal()->shouldReturn(120);
     }
 }

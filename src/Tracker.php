@@ -174,12 +174,12 @@ class Tracker
     /**
      * Creates an order collection|aggregate
      *
+     * @param number $orderTotal
      * @return Order
      */
-    public function createOrder()
+    public function createOrder($orderTotal)
     {
-
-        return new Order();
+        return new Order($orderTotal);
     }
 
     /**
