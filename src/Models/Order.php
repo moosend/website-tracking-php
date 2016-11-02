@@ -11,14 +11,16 @@ class Order implements SerializablePayload
      * @param string $itemCode
      * @param number $itemPrice
      * @param string $itemUrl
+     * @param int $itemQuantity
+     * @param int $itemTotal
      * @param string $itemName
      * @param string $itemImage
      * @param array $properties
      * @return \Moosend\Models\Product
      */
-    public function addProduct($itemCode, $itemPrice, $itemUrl, $itemName = '', $itemImage = '', $properties = [])
+    public function addProduct($itemCode, $itemPrice, $itemUrl, $itemQuantity, $itemTotal = 0, $itemName = '', $itemImage = '', $properties = [])
     {
-        $product = new Product($itemCode, $itemPrice, $itemUrl, $itemName, $itemImage, $properties);
+        $product = new Product($itemCode, $itemPrice, $itemUrl, $itemQuantity, $itemTotal, $itemName, $itemImage, $properties);
 
         array_push($this->order, $product);
 

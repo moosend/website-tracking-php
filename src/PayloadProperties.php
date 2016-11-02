@@ -13,6 +13,8 @@ class PayloadProperties {
     const ITEM_NAME = 'itemName';
     const ITEM_IMAGE = 'itemImage';
     const ITEM_URL = 'itemUrl';
+    const ITEM_QUANTITY = 'itemQuantity';
+    const ITEM_TOTAL = 'itemTotalPrice';
     const SITE_ID = 'siteId';
     const ACTION_TYPE = 'actionType';
     const PRODUCTS = 'products';

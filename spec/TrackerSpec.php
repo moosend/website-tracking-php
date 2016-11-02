@@ -70,6 +70,7 @@ class TrackerSpec extends ObjectBehavior
         $itemCode = '123-Code';
         $itemPrice = 22.45;
         $itemUrl = 'http://item.com';
+        $itemQuantity = 1;
         $itemName = 'T-shirt';
         $itemImage = 'http://item.com/image';
         $properties = [ 'color' => 'red' ];
@@ -85,7 +86,7 @@ class TrackerSpec extends ObjectBehavior
         $payload->getAddToOrder(Argument::type(Product::class))->shouldBeCalled();
         $client->request('POST', 'track', Argument::type('array'))->shouldBeCalled();
 
-        $this->addToOrder($itemCode, $itemPrice, $itemUrl, $itemName, $itemImage, $properties);
+        $this->addToOrder($itemCode, $itemPrice, $itemUrl,$itemQuantity, null, $itemName, $itemImage, $properties);
     }
 
     function it_tracks_order_completed_events($payload, $client)

@@ -94,16 +94,19 @@ class Tracker
     /**
      * @param $itemCode
      * @param number $itemPrice
-     * @param array $properties
      * @param string $itemUrl
+     * @param int $itemQuantity
+     * @param int $itemTotal
      * @param string $itemName
      * @param string $itemImage
+     * @param array $properties
      * @return mixed
      */
-    public function addToOrder($itemCode, $itemPrice, $itemUrl, $itemName = '', $itemImage = '', $properties = [])
+    public function addToOrder($itemCode, $itemPrice, $itemUrl, $itemQuantity, $itemTotal = 0, $itemName = '', $itemImage = '', $properties = [])
     {
 
         if (empty($itemCode)) {
+
             throw new \InvalidArgumentException('$itemCode should not be empty');
         }
 
@@ -113,7 +116,18 @@ class Tracker
         }
 
         if (empty($itemUrl)) {
+
             throw new \InvalidArgumentException('$itemUrl should not be empty');
+        }
+
+        if (empty($itemQuantity)) {
+
+            throw new \InvalidArgumentException('$itemQuantity should not be empty');
+        }
+
+        if (!is_numeric($itemQuantity)) {
+
+            throw new \InvalidArgumentException('$itemQuantity should be a numeric type');
         }
 
         if (!is_array($properties)) {
@@ -131,7 +145,7 @@ class Tracker
             $properties[PayloadProperties::ITEM_IMAGE] = $itemImage;
         }
 
-        $payload = $this->payload->getAddToOrder(new Product($itemCode, $itemPrice, $itemUrl, $itemName, $itemImage, $properties));
+        $payload = $this->payload->getAddToOrder(new Product($itemCode, $itemPrice, $itemUrl, $itemQuantity, $itemTotal, $itemName, $itemImage, $properties));
 
         return $this->client->request('POST', 'track', [
             'headers' => [

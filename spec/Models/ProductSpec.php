@@ -11,13 +11,15 @@ class ProductSpec extends ObjectBehavior
     protected $itemCode = '123-Code';
     protected $itemPrice = 22.45;
     protected $itemUrl = 'http://item.com';
+    protected $itemQuantity = 1;
+    protected $itemTotalPrice = 22.45;
     protected $itemName = 'T-shirt';
     protected $itemImage = 'http://item.com/image';
     protected $properties = ['color' => 'red'];
 
     public function let()
     {
-        $this->beConstructedWith($this->itemCode, $this->itemPrice, $this->itemUrl, $this->itemName, $this->itemImage, $this->properties);
+        $this->beConstructedWith($this->itemCode, $this->itemPrice, $this->itemUrl, $this->itemQuantity, $this->itemTotalPrice, $this->itemName, $this->itemImage, $this->properties);
     }
 
     function it_is_initializable()
@@ -31,8 +33,10 @@ class ProductSpec extends ObjectBehavior
             PayloadProperties::ITEM_CODE => $this->itemCode,
             PayloadProperties::ITEM_PRICE => $this->itemPrice,
             PayloadProperties::ITEM_URL => $this->itemUrl,
+            PayloadProperties::ITEM_QUANTITY => $this->itemQuantity,
             PayloadProperties::ITEM_NAME => $this->itemName,
             PayloadProperties::ITEM_IMAGE => $this->itemImage,
+            PayloadProperties::ITEM_TOTAL => $this->itemTotalPrice,
         ];
 
         $arrayToReturn = array_merge($this->properties, $arrayToReturn);

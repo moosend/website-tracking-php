@@ -57,14 +57,16 @@ class PayloadSpec extends ObjectBehavior
         $this->getIdentify('some@mail.com', 'John Doe', $properties)->shouldHaveKeyWithValue(PayloadProperties::PROPERTIES, $properties);
     }
 
-    function it_generates_order_payload_by_itemCode_and_itemPrice()
+    function it_generates_added_to_order_payload_by_itemCode_and_itemPrice()
     {
         $itemCode = '123-Code';
         $itemPrice = 22.45;
         $itemUrl = 'http://item.com';
+        $itemQuantity = 1;
+        $itemTotalprice = 22.45;
         $itemName = 'T-shirt';
         $itemImage = 'http://item.com/image';
-        $properties = [ 'color' => 'red' ];
+        $properties = ['color' => 'red'];
 
         $propertiesAfter = [
             [
@@ -72,15 +74,17 @@ class PayloadSpec extends ObjectBehavior
                     PayloadProperties::ITEM_CODE => $itemCode,
                     PayloadProperties::ITEM_PRICE => $itemPrice,
                     PayloadProperties::ITEM_URL => $itemUrl,
+                    PayloadProperties::ITEM_QUANTITY => $itemQuantity,
                     PayloadProperties::ITEM_NAME => $itemName,
                     PayloadProperties::ITEM_IMAGE => $itemImage,
+                    PayloadProperties::ITEM_TOTAL => $itemTotalprice,
                 ]
             ]
         ];
 
         $propertiesAfter[0][PayloadProperties::PRODUCT] = array_merge($properties, $propertiesAfter[0][PayloadProperties::PRODUCT]);
 
-        $product = new Product($itemCode, $itemPrice, $itemUrl, $itemName, $itemImage, $properties);
+        $product = new Product($itemCode, $itemPrice, $itemUrl, $itemQuantity, $itemTotalprice, $itemName, $itemImage, $properties);
 
         $this->getAddToOrder($product)->shouldHaveKeyWithValue(PayloadProperties::PROPERTIES, $propertiesAfter);
         $this->getAddToOrder($product)->shouldHaveKeyWithValue(PayloadProperties::ACTION_TYPE, ActionTypes::ADD_TO_ORDER);
@@ -94,9 +98,11 @@ class PayloadSpec extends ObjectBehavior
         $itemCode = '123-Code';
         $itemPrice = 22.45;
         $itemUrl = 'http://item.com';
+        $itemQuantity = 1;
+        $itemTotalprice = 22.45;
         $itemName = 'T-shirt';
         $itemImage = 'http://item.com/image';
-        $properties = [ 'color' => 'red' ];
+        $properties = ['color' => 'red'];
 
         $propertiesAfter = [
             [
@@ -106,8 +112,10 @@ class PayloadSpec extends ObjectBehavior
                         PayloadProperties::ITEM_CODE => $itemCode,
                         PayloadProperties::ITEM_PRICE => $itemPrice,
                         PayloadProperties::ITEM_URL => $itemUrl,
+                        PayloadProperties::ITEM_QUANTITY => $itemQuantity,
                         PayloadProperties::ITEM_NAME => $itemName,
-                        PayloadProperties::ITEM_IMAGE => $itemImage
+                        PayloadProperties::ITEM_IMAGE => $itemImage,
+                        PayloadProperties::ITEM_TOTAL => $itemTotalprice
                     ]
                 ]
             ]
@@ -115,7 +123,7 @@ class PayloadSpec extends ObjectBehavior
 
         $order = new Order();
 
-        $order->addProduct($itemCode, $itemPrice, $itemUrl, $itemName, $itemImage, $properties);
+        $order->addProduct($itemCode, $itemPrice, $itemUrl, $itemQuantity, $itemTotalprice, $itemName, $itemImage, $properties);
 
         $this->getOrderCompleted($order)->shouldHaveKeyWithValue(PayloadProperties::PROPERTIES, $propertiesAfter);
         $this->getOrderCompleted($order)->shouldHaveKeyWithValue(PayloadProperties::ACTION_TYPE, ActionTypes::ORDER_COMPLETED);

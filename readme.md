@@ -25,10 +25,10 @@ $tracker->init('site-id');
 There is another alternative, by using the function called `track()` which creates the instance for you.
 
 ~~~~
-$tracker = track();
+$tracker = track($siteId, $requestUseragent, $requestIpAddress);
 ~~~~
 
-You have to make sure that **index.php** is included somewhere on your code base in order to make this work.
+You have to make sure that **vendor/autoload.php** is included somewhere on your code base in order to make this work.
 
 #### Sending events
 
@@ -46,6 +46,7 @@ $tracker->addToOrder('itemCode', 'itemPrice', 'itemUrl', 'itemName', 'itemImage'
 $order = $tracker->createOrder();
 
 $order->addProduct('itemCode', 'itemPrice', 'itemUrl', 'itemName', 'itemImage', $props);
+//add as many products as you want before tracking and order completed event
 $order->addProduct('itemCode', 'itemPrice', 'itemUrl', 'itemName', 'itemImage', $props);
 
 $tracker->orderCompleted($order);

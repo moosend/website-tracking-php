@@ -18,13 +18,15 @@ class OrderSpec extends ObjectBehavior
         $itemCode = '123-Code';
         $itemPrice = 22.45;
         $itemUrl = 'http://item.com';
+        $itemQuantity = 1;
+        $itemTotalPrice = 22.45;
         $itemName = 'T-shirt';
         $itemImage = 'http://item.com/image';
-        $properties = [ 'color' => 'red' ];
+        $properties = ['color' => 'red'];
 
-        $product = new Product($itemCode, $itemPrice, $itemUrl, $itemName, $itemImage, $properties);
+        $product = new Product($itemCode, $itemPrice, $itemUrl, $itemQuantity, $itemTotalPrice, $itemName, $itemImage, $properties);
 
-        $this->addProduct($itemCode, $itemPrice, $itemUrl, $itemName, $itemImage, $properties)->shouldReturnAnInstanceOf(Product::class);
+        $this->addProduct($itemCode, $itemPrice, $itemUrl, $itemQuantity, $itemTotalPrice, $itemName, $itemImage, $properties)->shouldReturnAnInstanceOf(Product::class);
 
         $this->shouldHaveProducts();
 
