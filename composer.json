@@ -2,6 +2,7 @@
     "name": "moosend/tracker",
     "description": "Track website activity for Moosend platform",
     "type": "lib",
+    "license": "MIT",
     "autoload": {
         "psr-4": {
             "Moosend\\": "src"
