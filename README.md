@@ -1,5 +1,5 @@
 <p align="center">
-    <img width="250" class="logo" alt="moosend" src="https://moosend.com/wp-content/themes/moosend_theme/images/moosend_logo_full.svg" scale="0">
+    <a target="_blank" href="https://www.moosend.com/"><img width="250" class="logo" alt="moosend" src="https://moosend.com/wp-content/themes/moosend_theme/images/moosend_logo_full.svg" scale="0"></a>
 </p>
 
 <p align="center">
