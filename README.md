@@ -1,4 +1,9 @@
-Moosend tracking library
+<p align="center">
+    <a href="https://packagist.org/packages/moosend/tracker"><img src="https://poser.pugx.org/moosend/tracker/v/stable.svg" alt="Latest Stable Version"></a>
+    <a href="https://packagist.org/packages/moosend/tracker"><img src="https://poser.pugx.org/moosend/tracker/license.svg" alt="License"></a>
+</p>
+
+##Moosend tracking library
 
 #### Pulling dependencies
 This project uses [composer](https://getcomposer.org/) for auto-loading and managing dependencies.
