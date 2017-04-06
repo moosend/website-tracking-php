@@ -1,5 +1,5 @@
 <p align="center">
-    <a href="https://travis-ci.org/moosend/tracker"><img src="https://travis-ci.org/moosend/tracker.svg" alt="Build Status"></a>
+    <a href="https://travis-ci.org/moosend/tracker"><img src="https://travis-ci.org/moosend/website-tracking-php.svg" alt="Build Status"></a>
     <a href="https://packagist.org/packages/moosend/tracker"><img src="https://poser.pugx.org/moosend/tracker/v/stable.svg" alt="Latest Stable Version"></a>
     <a href="https://packagist.org/packages/moosend/tracker"><img src="https://poser.pugx.org/moosend/tracker/license.svg" alt="License"></a>
 </p>
