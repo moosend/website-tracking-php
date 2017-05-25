@@ -18,8 +18,7 @@
         }
     ],
     "require": {
-        "ramsey/uuid": "^3.4",
-        "guzzlehttp/guzzle": "^6.2"
+        "guzzlehttp/guzzle": "~5.0"
     },
     "require-dev": {
         "phpspec/phpspec": "~2.0"

@@ -1,8 +1,7 @@
 <?php namespace Moosend;
 
 use GuzzleHttp\Client;
-use GuzzleHttp\RequestOptions;
-use Ramsey\Uuid\Uuid;
+use Moosend\Utils\Uuid;
 
 /**
  * Class TrackerFactory
@@ -32,7 +31,7 @@ class TrackerFactory {
         $cookie = new Cookie();
 
         $userId = $cookie->getCookie(CookieNames::USER_ID);
-        $userId = ! empty($userId) ? $userId : Uuid::uuid4()->toString();
+        $userId = ! empty($userId) ? $userId : Uuid::v4();
 
         $payload = new Payload(new Cookie(), $siteId, $userId);
 
@@ -53,7 +52,9 @@ class TrackerFactory {
 
         $client = new Client([
             'base_uri' => API::ENDPOINT,
-            RequestOptions::HEADERS => $requestHeaders
+            'defaults'  =>  [
+                'headers'   =>  $requestHeaders
+            ]
         ]);
 
         return new Tracker($cookie, $payload, $client);

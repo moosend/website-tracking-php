@@ -2,7 +2,7 @@
 
 use Moosend\Models\Order;
 use Moosend\Models\Product;
-use Ramsey\Uuid\Uuid;
+use Moosend\Utils\Uuid;
 use GuzzleHttp\Client;
 
 /**
@@ -31,7 +31,8 @@ class Tracker
     /**
      * Stores a cookie that tells if a user is a new one or returned
      *
-     * @param $siteId
+     * @param string $siteId
+     * @param bool $force
      */
     public function init($siteId = '', $force = false)
     {
@@ -44,10 +45,8 @@ class Tracker
 
         //store campaignId on cookies
         $this->storeCampaignIdIfExists();
-
         if (!$hasUserId || $force) {
-
-            $this->cookie->setCookie(CookieNames::USER_ID, Uuid::uuid4()->toString());
+            $this->cookie->setCookie(CookieNames::USER_ID, Uuid::v4());
             return;
         }
     }
@@ -65,7 +64,7 @@ class Tracker
         //set user email cookie
         $this->cookie->setCookie(CookieNames::USER_EMAIL, $email);
 
-        return $this->client->request('POST', 'identify', [
+        return $this->client->post('identify', [
             'headers' => [
                 'Content-Type' => 'application/json'
             ],
@@ -83,7 +82,7 @@ class Tracker
     {
         $payload = $this->payload->getPageView($url, $properties);
 
-        return $this->client->request('POST', 'track', [
+        return $this->client->post('track', [
             'headers' => [
                 'Content-Type' => 'application/json'
             ],
@@ -147,7 +146,7 @@ class Tracker
 
         $payload = $this->payload->getAddToOrder(new Product($itemCode, $itemPrice, $itemUrl, $itemQuantity, $itemTotal, $itemName, $itemImage, $properties));
 
-        return $this->client->request('POST', 'track', [
+        return $this->client->post('track', [
             'headers' => [
                 'Content-Type' => 'application/json'
             ],
@@ -163,7 +162,7 @@ class Tracker
     {
         $payload = $this->payload->getOrderCompleted($order);
 
-        return $this->client->request('POST', 'track', [
+        return $this->client->post( 'track', [
             'headers' => [
                 'Content-Type' => 'application/json'
             ],

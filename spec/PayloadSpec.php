@@ -8,19 +8,19 @@ use Moosend\CookieNames;
 use Moosend\Models\Order;
 use Moosend\PayloadProperties;
 use Moosend\Models\Product;
+use Moosend\Utils\Uuid;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
-use Ramsey\Uuid\Uuid;
 
 class PayloadSpec extends ObjectBehavior
 {
     function let(Cookie $cookie)
     {
-        $this->beConstructedWith($cookie, 'user1', Uuid::uuid4());
+        $this->beConstructedWith($cookie, 'user1', Uuid::v4());
 
         $cookie->getCookie(CookieNames::USER_EMAIL)->willReturn('some@mail.com');
-        $cookie->getCookie(CookieNames::USER_ID)->willReturn(Uuid::uuid4());
-        $cookie->getCookie(CookieNames::CAMPAIGN_ID)->willReturn(Uuid::uuid4());
+        $cookie->getCookie(CookieNames::USER_ID)->willReturn(Uuid::v4());
+        $cookie->getCookie(CookieNames::CAMPAIGN_ID)->willReturn(Uuid::v4());
     }
 
     function it_is_initializable()

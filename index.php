@@ -9,7 +9,7 @@ use Moosend\TrackerFactory;
  * @param string $userAgent
  * @param string $requestIPAddress
  * @throws Exception
- * @return Tracker
+ * @return Moosend\Tracker
  */
 function tracker($siteId, $userAgent = '', $requestIPAddress = ''){
 
