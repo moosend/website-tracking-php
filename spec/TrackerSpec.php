@@ -10,6 +10,7 @@ use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Moosend\Cookie;
 use Moosend\CookieNames;
+use Moosend\Utils\Encryption;
 
 class TrackerSpec extends ObjectBehavior
 {
@@ -46,8 +47,10 @@ class TrackerSpec extends ObjectBehavior
         $name = 'some name';
         $props = ['color' => 'blue'];
 
+        $encryptedEmail = Encryption::encode($email);
+
         //stubs
-        $payload->getIdentify($email, $name, $props)->willReturn([
+        $payload->getIdentify($encryptedEmail, $name, $props)->willReturn([
             'email' => $email,
             'name' => $name,
             'properties' => $props,
@@ -58,9 +61,9 @@ class TrackerSpec extends ObjectBehavior
         ]);
 
         //expectations
-        $payload->getIdentify($email, $name, $props)->shouldBeCalled();
+        $payload->getIdentify($encryptedEmail, $name, $props)->shouldBeCalled();
         $client->post( 'identify', Argument::type('array'))->shouldBeCalled();
-        $cookie->setCookie(CookieNames::USER_EMAIL, $email)->shouldBeCalled();
+        $cookie->setCookie(CookieNames::USER_EMAIL, $encryptedEmail)->shouldBeCalled();
 
         $this->identify($email, $name, $props);
     }

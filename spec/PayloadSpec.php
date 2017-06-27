@@ -9,8 +9,8 @@ use Moosend\Models\Order;
 use Moosend\PayloadProperties;
 use Moosend\Models\Product;
 use Moosend\Utils\Uuid;
+use Moosend\Utils\Encryption;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 
 class PayloadSpec extends ObjectBehavior
 {
@@ -31,7 +31,7 @@ class PayloadSpec extends ObjectBehavior
     function it_generates_an_identify_payload_by_e_mail()
     {
 
-        $this->getIdentify('some@mail.com')->shouldHaveKeyWithValue(PayloadProperties::EMAIL, 'some@mail.com');
+        $this->getIdentify('some@mail.com')->shouldHaveKeyWithValue(PayloadProperties::EMAIL, Encryption::decode('some@mail.com'));
         $this->getIdentify('some@mail.com', 'John Doe')->shouldHaveKey(PayloadProperties::NAME);
         $this->getIdentify('some@mail.com')->shouldHaveKey(PayloadProperties::SITE_ID);
     }

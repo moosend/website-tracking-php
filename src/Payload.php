@@ -3,6 +3,7 @@
 use InvalidArgumentException;
 use Exception;
 use Moosend\Models;
+use Moosend\Utils\Encryption;
 
 /**
  * Class Payload
@@ -54,7 +55,7 @@ class Payload
 
         //props that we will combine with default props
         $props = [
-            PayloadProperties::EMAIL => $email
+            PayloadProperties::EMAIL => Encryption::decode($email)
         ];
 
         if ($name) {
@@ -163,7 +164,7 @@ class Payload
 
     private function getTrackPayload($actionType, $props)
     {
-        $email = $this->cookie->getCookie(CookieNames::USER_EMAIL);
+        $email = Encryption::decode($this->cookie->getCookie(CookieNames::USER_EMAIL));
 
         $mandatoryProps = [
             PayloadProperties::ACTION_TYPE => $actionType,

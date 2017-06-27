@@ -3,6 +3,7 @@
 use Moosend\Models\Order;
 use Moosend\Models\Product;
 use Moosend\Utils\Uuid;
+use Moosend\Utils\Encryption;
 use GuzzleHttp\Client;
 
 /**
@@ -59,10 +60,12 @@ class Tracker
      */
     public function identify($email, $name = '', $properties = [])
     {
-        $payload = $this->payload->getIdentify($email, $name, $properties);
+        $encryptedEmail = Encryption::encode($email);
+
+        $payload = $this->payload->getIdentify($encryptedEmail, $name, $properties);
 
         //set user email cookie
-        $this->cookie->setCookie(CookieNames::USER_EMAIL, $email);
+        $this->cookie->setCookie(CookieNames::USER_EMAIL, $encryptedEmail);
 
         return $this->client->post('identify', [
             'headers' => [
@@ -188,7 +191,7 @@ class Tracker
     public function isIdentified($email)
     {
         $userId = $this->cookie->getCookie(CookieNames::USER_ID);
-        $storedEmail = $this->cookie->getCookie(CookieNames::USER_EMAIL);
+        $storedEmail = Encryption::decode($this->cookie->getCookie(CookieNames::USER_EMAIL));
 
         if (empty($userId) || empty($storedEmail)) {
             return false;
