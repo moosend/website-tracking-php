@@ -4,6 +4,7 @@ use InvalidArgumentException;
 use Exception;
 use Moosend\Models;
 use Moosend\Utils\Encryption;
+use Moosend\ActionTypes;
 
 /**
  * Class Payload
@@ -160,10 +161,10 @@ class Payload
 
     /**
     *
-    * @param string $actionType
+    * @param string|ActionType $actionType
     * @param $props
     */
-    private function getTrackPayload(string $actionType, $props)
+    private function getTrackPayload($actionType, $props)
     {
         $email = Encryption::decode($this->cookie->getCookie(CookieNames::USER_EMAIL));
 
