@@ -2,5 +2,3 @@ suites:
     moosend_suite:
         namespace: Moosend
         psr4_prefix: Moosend
-extensions:
-    LeanPHP\PhpSpec\CodeCoverage\CodeCoverageExtension: ~
