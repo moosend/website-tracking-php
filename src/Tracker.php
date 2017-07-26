@@ -1,14 +1,17 @@
 <?php namespace Moosend;
 
-use Ramsey\Uuid\Uuid;
+use Moosend\Models\Order;
+use Moosend\Models\Product;
+use Moosend\Utils\Uuid;
+use Moosend\Utils\Encryption;
 use GuzzleHttp\Client;
+
 /**
  * Class Tracker
  * @package Moosend
  */
 class Tracker
 {
-
     /**
      * @var Cookie
      * @var Payload
@@ -28,24 +31,24 @@ class Tracker
     /**
      * Stores a cookie that tells if a user is a new one or returned
      *
-     * @param $siteId
+     * @param string $siteId
+     * @param bool $force
      */
-    public function init($siteId, $force = false)
+    public function init($siteId = '', $force = false)
     {
-
+        $siteId = !empty($siteId) ? $siteId : $this->payload->getSiteId();
         $hasUserId = $this->cookie->getCookie(CookieNames::USER_ID);
         $hasUserId = !empty($hasUserId);
 
+        //store siteId on cookies
         $this->cookie->setCookie(CookieNames::SITE_ID, $siteId);
 
+        //store campaignId on cookies
+        $this->storeCampaignIdIfExists();
         if (!$hasUserId || $force) {
-
-            $this->cookie->setCookie(CookieNames::USER_ID, Uuid::uuid4()->toString());
-            $this->cookie->setCookie(CookieNames::VISITOR_TYPE, VisitorTypes::VISITOR_TYPE_NEW);
+            $this->cookie->setCookie(CookieNames::USER_ID, Uuid::v4());
             return;
         }
-
-        $this->cookie->setCookie(CookieNames::VISITOR_TYPE, VisitorTypes::VISITOR_TYPE_RETURNED);
     }
 
     /**
@@ -56,12 +59,14 @@ class Tracker
      */
     public function identify($email, $name = '', $properties = [])
     {
-        $payload = $this->payload->getIdentify($email, $name, $properties);
+        $encryptedEmail = Encryption::encode($email);
+
+        $payload = $this->payload->getIdentify($encryptedEmail, $name, $properties);
 
         //set user email cookie
-        $this->cookie->setCookie(CookieNames::USER_EMAIL, $email);
+        $this->cookie->setCookie(CookieNames::USER_EMAIL, $encryptedEmail);
 
-        return $this->client->request('POST', '/identify', [
+        return $this->client->post('identify', [
             'headers' => [
                 'Content-Type' => 'application/json'
             ],
@@ -79,7 +84,7 @@ class Tracker
     {
         $payload = $this->payload->getPageView($url, $properties);
 
-        return $this->client->request('POST', '/track', [
+        return $this->client->post('track', [
             'headers' => [
                 'Content-Type' => 'application/json'
             ],
@@ -89,15 +94,52 @@ class Tracker
 
     /**
      * @param $itemCode
-     * @param $itemPrice
+     * @param number $itemPrice
+     * @param string $itemUrl
+     * @param int $itemQuantity
+     * @param int $itemTotal
+     * @param string $itemName
+     * @param string $itemImage
      * @param array $properties
      * @return mixed
      */
-    public function addToOrder($itemCode, $itemPrice, $properties = [])
+    public function addToOrder($itemCode, $itemPrice = 0, $itemUrl, $itemQuantity = 1, $itemTotal = 0, $itemName = '', $itemImage = '', $properties = [])
     {
-        $payload = $this->payload->getAddToOrder($itemCode, $itemPrice, $properties);
+        if (empty($itemCode)) {
+            throw new \InvalidArgumentException('$itemCode should not be empty');
+        }
 
-        return $this->client->request('POST', '/track', [
+        if (!is_numeric($itemPrice)) {
+            $itemPrice = 0;
+        }
+
+        if (empty($itemUrl)) {
+            throw new \InvalidArgumentException('$itemUrl should not be empty');
+        }
+
+        if (empty($itemQuantity)) {
+            throw new \InvalidArgumentException('$itemQuantity should not be empty');
+        }
+
+        if (!is_numeric($itemQuantity)) {
+            $itemQuantity = 1;
+        }
+
+        if (!is_array($properties)) {
+            throw new \InvalidArgumentException('$properties should be an array');
+        }
+
+        if (!empty($itemName)) {
+            $properties[PayloadProperties::ITEM_NAME] = $itemName;
+        }
+
+        if (!empty($itemImage)) {
+            $properties[PayloadProperties::ITEM_IMAGE] = $itemImage;
+        }
+
+        $payload = $this->payload->getAddToOrder(new Product($itemCode, $itemPrice, $itemUrl, $itemQuantity, $itemTotal, $itemName, $itemImage, $properties));
+
+        return $this->client->post('track', [
             'headers' => [
                 'Content-Type' => 'application/json'
             ],
@@ -106,21 +148,32 @@ class Tracker
     }
 
     /**
-     * @param array $properties
+     * @param Order $order
      * @return mixed
      */
-    public function orderCompleted($properties = [])
+    public function orderCompleted(Order $order)
     {
-        $payload = $this->payload->getOrderCompleted($properties);
+        $payload = $this->payload->getOrderCompleted($order);
 
-        return $this->client->request('POST', '/track', [
+        return $this->client->post( 'track', [
             'headers' => [
                 'Content-Type' => 'application/json'
             ],
             'body' => json_encode($payload)
         ]);
     }
-    
+
+    /**
+     * Creates an order collection|aggregate
+     *
+     * @param number $orderTotal
+     * @return Order
+     */
+    public function createOrder($orderTotal)
+    {
+        return new Order($orderTotal);
+    }
+
     /**
      * @param string $email
      * @return boolean
@@ -128,16 +181,47 @@ class Tracker
     public function isIdentified($email)
     {
         $userId = $this->cookie->getCookie(CookieNames::USER_ID);
-        $storedEmail = $this->cookie->getCookie(CookieNames::USER_EMAIL);
-        
-        if(empty($userId) || empty($storedEmail)){
+        $storedEmail = Encryption::decode($this->cookie->getCookie(CookieNames::USER_EMAIL));
+
+        if (empty($userId) || empty($storedEmail)) {
             return false;
         }
-        
-        if($storedEmail != $email){
+
+        if ($storedEmail != $email) {
             return false;
         }
-        
+
         return true;
+    }
+
+    /**
+    * @param string $string
+    */
+    public function isValidUUID($string)
+    {
+        $validUUIDRegex = '/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i';
+
+        return preg_match($validUUIDRegex, $string) || preg_match($validUUIDRegex, preg_replace('/(\w{8})(\w{4})(\w{4})(\w{4})(\w{12})/i', "$1-$2-$3-$4-$5", $string));
+    }
+
+    /**
+     * Store $campaignId on cookies
+     *
+     * @param $campaignId
+     */
+    public function storeCampaignId($campaignId)
+    {
+        if (!preg_match('/^\{?[A-Za-z0-9]{8}-[A-Za-z0-9]{4}-[A-Za-z0-9]{4}-[A-Za-z0-9]{4}-[A-Za-z0-9]{12}\}?$/', $campaignId)) {
+            throw new \InvalidArgumentException('$campaignId should be a valid uuid');
+        }
+
+        $this->cookie->setCookie(CookieNames::CAMPAIGN_ID, $campaignId);
+    }
+
+    private function storeCampaignIdIfExists()
+    {
+        if (isset($_GET[QueryStringParams::CAMPAIGN_ID]) && !empty($_GET[QueryStringParams::CAMPAIGN_ID])) {
+            $this->storeCampaignId($_GET[QueryStringParams::CAMPAIGN_ID]);
+        }
     }
 }
