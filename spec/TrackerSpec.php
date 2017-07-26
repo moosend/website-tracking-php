@@ -1,6 +1,4 @@
-<?php
-
-namespace spec\Moosend;
+<?php namespace spec\Moosend;
 
 use GuzzleHttp\Client;
 use Moosend\Models\Order;
@@ -92,6 +90,51 @@ class TrackerSpec extends ObjectBehavior
         $this->addToOrder($itemCode, $itemPrice, $itemUrl,$itemQuantity, null, $itemName, $itemImage, $properties);
     }
 
+    function it_throws_exception_if_itemCode_is_empty() {
+        $itemPrice = 22.45;
+        $itemUrl = 'http://item.com';
+        $itemQuantity = 1;
+        $itemName = 'T-shirt';
+        $itemImage = 'http://item.com/image';
+        $properties = [ 'color' => 'red' ];
+
+        $this->shouldThrow('\InvalidArgumentException')->duringAddToOrder(null, $itemPrice, $itemUrl,$itemQuantity, null, $itemName, $itemImage, $properties);
+    }
+
+    function it_throws_exception_if_itemUrl_is_empty() {
+        $itemCode = '123-Code';
+        $itemPrice = 22.45;
+        $itemQuantity = 1;
+        $itemName = 'T-shirt';
+        $itemImage = 'http://item.com/image';
+        $properties = [ 'color' => 'red' ];
+
+        $this->shouldThrow('\InvalidArgumentException')->duringAddToOrder($itemCode, $itemPrice, null, $itemQuantity, null, $itemName, $itemImage, $properties);
+    }
+
+    function it_throws_exception_if_itemQuantity_is_empty() {
+        $itemCode = '123-Code';
+        $itemUrl = 'http://item.com';
+        $itemPrice = 22.45;
+        $itemName = 'T-shirt';
+        $itemImage = 'http://item.com/image';
+        $properties = [ 'color' => 'red' ];
+
+        $this->shouldThrow('\InvalidArgumentException')->duringAddToOrder($itemCode, $itemPrice, $itemUrl, null, null, $itemName, $itemImage, $properties);
+    }
+
+    function it_throws_exception_if_properties_is_not_an_array() {
+        $itemCode = '123-Code';
+        $itemPrice = 22.45;
+        $itemUrl = 'http://item.com';
+        $itemQuantity = 1;
+        $itemName = 'T-shirt';
+        $itemImage = 'http://item.com/image';
+        $properties = false;
+
+        $this->shouldThrow('\InvalidArgumentException')->duringAddToOrder($itemCode, $itemPrice, $itemUrl, $itemQuantity, null, $itemName, $itemImage, $properties);
+    }
+
     function it_tracks_order_completed_events($payload, $client)
     {
         $orderTotal = 120;
@@ -141,5 +184,31 @@ class TrackerSpec extends ObjectBehavior
 
         $this->init('some-site', true);
     }
+
+    function it_should_throw_exception_if_campaign_id_has_invalid_uuid() {
+        $this->shouldThrow('\InvalidArgumentException')->duringStoreCampaignId(123);
+    }
+
+    function it_should_store_campaign_id() {
+        $this->shouldNotThrow('\InvalidArgumentException')->duringStoreCampaignId("05809235-13f1-44b7-bd65-b523dd33c5f1");
+    }
+
+    function it_should_return_true_if_uuid_is_valid() {
+        $this->isValidUUID("05809235-13f1-44b7-bd65-b523dd33c5f1")->shouldReturn(true);
+    }
+
+    function it_should_return_false_if_uuid_is_invalid() {
+        $this->isValidUUID("05809235")->shouldReturn(false);
+    }
+
+    function it_should_return_true_if_uuid_is_without_dashes() {
+        $this->isValidUUID("0580923513f144b7bd65b523dd33c5f1")->shouldReturn(true);
+    }
+
+    function it_creates_order() {
+        $this->createOrder(120)->shouldReturnAnInstanceOf("Moosend\Models\Order");
+    }
+
+
 }
 

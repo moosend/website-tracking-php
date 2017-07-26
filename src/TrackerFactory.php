@@ -7,10 +7,10 @@ use Moosend\Utils\Uuid;
  * Class TrackerFactory
  * @package Moosend
  */
-class TrackerFactory {
-
-    public function __construct(){
-
+class TrackerFactory
+{
+    public function __construct()
+    {
     }
 
     /**
@@ -24,7 +24,7 @@ class TrackerFactory {
      */
     public function create($siteId, $userAgent = '', $requestIPAddress = '')
     {
-        if(empty($siteId)){
+        if (empty($siteId)) {
             throw new \Exception('Cannot create an instance without a site id');
         }
 
@@ -40,13 +40,11 @@ class TrackerFactory {
         $browserUserAgent = !empty($userAgent) ? $userAgent : Browser::getUserAgent();
         $browserIPAddress = !empty($requestIPAddress) ? $requestIPAddress : Browser::getRequestIPAddress();
 
-        if(! empty($browserUserAgent)){
-
+        if (! empty($browserUserAgent)) {
             $requestHeaders['X-Original-User-Agent'] = $browserUserAgent;
         }
 
-        if(! empty($browserIPAddress)){
-
+        if (! empty($browserIPAddress)) {
             $requestHeaders['X-Original-Request-IP-Address'] = $browserIPAddress;
         }
 
@@ -59,4 +57,4 @@ class TrackerFactory {
 
         return new Tracker($cookie, $payload, $client);
     }
-} 
+}

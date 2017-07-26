@@ -1,6 +1,6 @@
 <?php namespace Moosend;
 
-class QueryStringParams {
-
+class QueryStringParams
+{
     const CAMPAIGN_ID = 'cmid';
-} 
+}

@@ -12,7 +12,6 @@ use GuzzleHttp\Client;
  */
 class Tracker
 {
-
     /**
      * @var Cookie
      * @var Payload
@@ -104,46 +103,37 @@ class Tracker
      * @param array $properties
      * @return mixed
      */
-    public function addToOrder($itemCode, $itemPrice, $itemUrl, $itemQuantity, $itemTotal = 0, $itemName = '', $itemImage = '', $properties = [])
+    public function addToOrder($itemCode, $itemPrice = 0, $itemUrl, $itemQuantity = 1, $itemTotal = 0, $itemName = '', $itemImage = '', $properties = [])
     {
-
         if (empty($itemCode)) {
-
             throw new \InvalidArgumentException('$itemCode should not be empty');
         }
 
         if (!is_numeric($itemPrice)) {
-
-            throw new \InvalidArgumentException('$itemPrice should be a numeric type');
+            $itemPrice = 0;
         }
 
         if (empty($itemUrl)) {
-
             throw new \InvalidArgumentException('$itemUrl should not be empty');
         }
 
         if (empty($itemQuantity)) {
-
             throw new \InvalidArgumentException('$itemQuantity should not be empty');
         }
 
         if (!is_numeric($itemQuantity)) {
-
-            throw new \InvalidArgumentException('$itemQuantity should be a numeric type');
+            $itemQuantity = 1;
         }
 
         if (!is_array($properties)) {
-
             throw new \InvalidArgumentException('$properties should be an array');
         }
 
         if (!empty($itemName)) {
-
             $properties[PayloadProperties::ITEM_NAME] = $itemName;
         }
 
         if (!empty($itemImage)) {
-
             $properties[PayloadProperties::ITEM_IMAGE] = $itemImage;
         }
 
@@ -188,7 +178,7 @@ class Tracker
      * @param string $email
      * @return boolean
      */
-    public function isIdentified($email)
+    public function isIdentified(string $email)
     {
         $userId = $this->cookie->getCookie(CookieNames::USER_ID);
         $storedEmail = Encryption::decode($this->cookie->getCookie(CookieNames::USER_EMAIL));
@@ -202,6 +192,16 @@ class Tracker
         }
 
         return true;
+    }
+
+    /**
+    * @param string $string
+    */
+    public function isValidUUID(string $string)
+    {
+        $validUUIDRegex = '/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i';
+
+        return preg_match($validUUIDRegex, $string) || preg_match($validUUIDRegex, preg_replace('/(\w{8})(\w{4})(\w{4})(\w{4})(\w{12})/i', "$1-$2-$3-$4-$5", $string));
     }
 
     /**

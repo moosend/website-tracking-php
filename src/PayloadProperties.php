@@ -1,9 +1,7 @@
 <?php namespace Moosend;
 
-
 class PayloadProperties
 {
-
     const CONTACT_ID = 'ContactId';
     const EMAIL = 'ContactEmailAddress';
     const NAME = 'ContactName';

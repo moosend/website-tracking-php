@@ -1,9 +1,9 @@
-<?php   namespace Moosend\Models;
+<?php namespace Moosend\Models;
 
-interface SerializablePayload {
-
+interface SerializablePayload
+{
     /**
      * @return array
      */
     public function toArray();
-} 
+}

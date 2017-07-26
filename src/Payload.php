@@ -11,7 +11,6 @@ use Moosend\Utils\Encryption;
  */
 class Payload
 {
-
     /**
      * @var Cookie
      */
@@ -91,7 +90,7 @@ class Payload
             $props[PayloadProperties::PROPERTIES] = $properties;
         }
 
-        return $this->getTrackPayload(ActionTypes::PAGE_VIEW, $props);
+        return $this->getTrackPayload(ActionTypes::PAGE_VIEWED, $props);
     }
 
     /**
@@ -102,7 +101,7 @@ class Payload
      */
     public function getAddToOrder(Models\Product $product)
     {
-        return $this->getTrackPayload(ActionTypes::ADD_TO_ORDER, [
+        return $this->getTrackPayload(ActionTypes::ADDED_TO_ORDER, [
             PayloadProperties::PROPERTIES =>
                 [
                     [
@@ -122,7 +121,6 @@ class Payload
     public function getOrderCompleted(Models\Order $order)
     {
         if (!$order->hasProducts()) {
-
             throw new \Exception('$order should have at least one product');
         }
 
@@ -145,7 +143,6 @@ class Payload
      */
     public function getCustom($event, $properties = [])
     {
-
         $properties = empty($properties) ? [] : [PayloadProperties::PROPERTIES => $properties];
 
         return $this->getTrackPayload($event, $properties);
@@ -158,18 +155,22 @@ class Payload
      * */
     public function getSiteId()
     {
-
         return $this->siteId;
     }
 
-    private function getTrackPayload($actionType, $props)
+    /**
+    *
+    * @param string $actionType
+    * @param $props
+    */
+    private function getTrackPayload(string $actionType, $props)
     {
         $email = Encryption::decode($this->cookie->getCookie(CookieNames::USER_EMAIL));
 
         $mandatoryProps = [
             PayloadProperties::ACTION_TYPE => $actionType,
             PayloadProperties::CONTACT_ID => $this->userId,
-            PayloadProperties::SITE_ID => $this->siteId,
+            PayloadProperties::SITE_ID => $this->getSiteId(),
             PayloadProperties::EMAIL => $email
         ];
 

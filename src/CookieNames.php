@@ -1,8 +1,7 @@
 <?php namespace Moosend;
 
-
-class CookieNames {
-
+class CookieNames
+{
     const USER_ID = 'MOOSEND_USER_ID';
     const VISITOR_TYPE = 'VISITOR_TYPE';
     const USER_EMAIL = 'USER_EMAIL';

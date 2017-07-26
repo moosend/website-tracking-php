@@ -1,7 +1,6 @@
 <?php namespace Moosend;
 
-
-class API {
-
+class API
+{
     const ENDPOINT = 'http://t.stat-track.com/';
 }

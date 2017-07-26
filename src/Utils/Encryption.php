@@ -2,10 +2,8 @@
 
 namespace Moosend\Utils;
 
-
 class Encryption
 {
-
     public static function encode($string)
     {
         return rtrim(strtr(base64_encode($string), '+/', '-_'), '=');
@@ -15,5 +13,4 @@ class Encryption
     {
         return base64_decode(strtr($string, '-_', '+/'));
     }
-
 }

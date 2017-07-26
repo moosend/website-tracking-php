@@ -1,6 +1,4 @@
-<?php
-
-namespace spec\Moosend\Models;
+<?php namespace spec\Moosend\Models;
 
 use Moosend\Models\Product;
 use PhpSpec\ObjectBehavior;
@@ -8,9 +6,18 @@ use Prophecy\Argument;
 
 class OrderSpec extends ObjectBehavior
 {
-    public function let()
+    function let()
     {
         $this->beConstructedWith(120);
+    }
+
+    function it_is_initializable()
+    {
+        $this->shouldHaveType('Moosend\Models\Order');
+    }
+
+    function it_should_implement_serializablepayload_interface() {
+        $this->shouldImplement('Moosend\Models\SerializablePayload');
     }
 
     function it_returns_an_array_created_from_products()
@@ -38,5 +45,9 @@ class OrderSpec extends ObjectBehavior
     function it_returns_order_total()
     {
         $this->getOrderTotal()->shouldReturn(120);
+    }
+
+    function it_should_throw_exception_if_orderTotal_is_not_numeric() {
+        $this->shouldThrow('\InvalidArgumentException')->during('__construct', [null]);
     }
 }

@@ -2,7 +2,6 @@
 
 class Order implements SerializablePayload
 {
-
     protected $order = [];
     /**
      * @var
@@ -12,10 +11,9 @@ class Order implements SerializablePayload
     /**
      * @param number $orderTotal
      */
-    public function __construct($orderTotal){
-
-        if(!is_numeric($orderTotal)){
-
+    public function __construct($orderTotal)
+    {
+        if (!is_numeric($orderTotal)) {
             throw new \InvalidArgumentException('$orderTotal should be numeric type');
         }
 
