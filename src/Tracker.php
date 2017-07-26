@@ -178,7 +178,7 @@ class Tracker
      * @param string $email
      * @return boolean
      */
-    public function isIdentified(string $email)
+    public function isIdentified($email)
     {
         $userId = $this->cookie->getCookie(CookieNames::USER_ID);
         $storedEmail = Encryption::decode($this->cookie->getCookie(CookieNames::USER_EMAIL));
