@@ -26,7 +26,7 @@ class TrackerSpec extends ObjectBehavior
     {
         $cookie->getCookie(CookieNames::USER_ID)->shouldBeCalled();
         $cookie->setCookie(CookieNames::SITE_ID, 'some-site')->shouldBeCalled();
-        $cookie->setCookie(CookieNames::USER_ID, Argument::type('string'))->shouldBeCalled();
+        $cookie->setCookie(CookieNames::USER_ID, Argument::type('string'), time() + 60 * 60 * 24 * 3650)->shouldBeCalled();
 
         $this->init('some-site');
     }
@@ -179,7 +179,7 @@ class TrackerSpec extends ObjectBehavior
         $cookie->getCookie(CookieNames::USER_ID)->willReturn('someId');
 
         $cookie->getCookie(CookieNames::USER_ID)->shouldBeCalled();
-        $cookie->setCookie(CookieNames::USER_ID, Argument::type('string'))->shouldBeCalled();
+        $cookie->setCookie(CookieNames::USER_ID, Argument::type('string'), time() + 60 * 60 * 24 * 3650)->shouldBeCalled();
         $cookie->setCookie(CookieNames::SITE_ID, 'some-site')->shouldBeCalled();
 
         $this->init('some-site', true);
