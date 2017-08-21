@@ -47,7 +47,7 @@ class Tracker
         $this->storeCampaignIdIfExists();
         if (!$hasUserId || $force) {
             $newUserId = $this->replace_dashes(Uuid::v4());
-            $this->cookie->setCookie(CookieNames::USER_ID, $newUserId);
+            $this->cookie->setCookie(CookieNames::USER_ID, $newUserId, time() + 60 * 60 * 24 * 3650);
             return;
         }
     }
