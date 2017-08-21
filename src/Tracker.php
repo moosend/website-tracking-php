@@ -46,7 +46,8 @@ class Tracker
         //store campaignId on cookies
         $this->storeCampaignIdIfExists();
         if (!$hasUserId || $force) {
-            $this->cookie->setCookie(CookieNames::USER_ID, Uuid::v4());
+            $newUserId = $this->replace_dashes(Uuid::v4());
+            $this->cookie->setCookie(CookieNames::USER_ID, $newUserId);
             return;
         }
     }
@@ -223,5 +224,10 @@ class Tracker
         if (isset($_GET[QueryStringParams::CAMPAIGN_ID]) && !empty($_GET[QueryStringParams::CAMPAIGN_ID])) {
             $this->storeCampaignId($_GET[QueryStringParams::CAMPAIGN_ID]);
         }
+    }
+
+    private function replace_dashes($string) {
+        $string = str_replace("-", "", $string);
+        return $string;
     }
 }
