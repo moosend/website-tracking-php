@@ -182,7 +182,7 @@ class Tracker
     public function isIdentified($email)
     {
         $userId = $this->cookie->getCookie(CookieNames::USER_ID);
-        $storedEmail = Encryption::decode($this->cookie->getCookie(CookieNames::USER_EMAIL));
+        $storedEmail = $this->getEmail();
 
         if (empty($userId) || empty($storedEmail)) {
             return false;
@@ -229,5 +229,13 @@ class Tracker
     private function replace_dashes($string) {
         $string = str_replace("-", "", $string);
         return $string;
+    }
+
+    /**
+     * @return string
+     */
+    private function getEmail() {
+        $email = urlencode(Encryption::decode($this->cookie->getCookie(CookieNames::USER_EMAIL)));
+        return rawurldecode($email);
     }
 }

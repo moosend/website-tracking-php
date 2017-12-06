@@ -166,13 +166,11 @@ class Payload
     */
     private function getTrackPayload($actionType, $props)
     {
-        $email = Encryption::decode($this->cookie->getCookie(CookieNames::USER_EMAIL));
-
         $mandatoryProps = [
             PayloadProperties::ACTION_TYPE => $actionType,
             PayloadProperties::CONTACT_ID => $this->userId,
             PayloadProperties::SITE_ID => $this->getSiteId(),
-            PayloadProperties::EMAIL => $email
+            PayloadProperties::EMAIL => $this->getEmail()
         ];
 
         if ($this->hasCampaignId()) {
@@ -182,8 +180,19 @@ class Payload
         return array_merge($mandatoryProps, $props);
     }
 
+    /**
+     * @return boolean
+     */
     private function hasCampaignId()
     {
         return !!$this->cookie->getCookie(CookieNames::CAMPAIGN_ID);
+    }
+
+    /**
+     * @return string
+     */
+    private function getEmail() {
+        $email = urlencode(Encryption::decode($this->cookie->getCookie(CookieNames::USER_EMAIL)));
+        return rawurldecode($email);
     }
 }
