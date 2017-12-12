@@ -71,7 +71,7 @@ class Tracker
             'headers' => [
                 'Content-Type' => 'application/json'
             ],
-            'body' => json_encode($payload)
+            'body' => json_encode($payload, JSON_UNESCAPED_UNICODE)
         ]);
     }
 
@@ -89,7 +89,7 @@ class Tracker
             'headers' => [
                 'Content-Type' => 'application/json'
             ],
-            'body' => json_encode($payload)
+            'body' => json_encode($payload, JSON_UNESCAPED_UNICODE)
         ]);
     }
 
@@ -144,7 +144,7 @@ class Tracker
             'headers' => [
                 'Content-Type' => 'application/json'
             ],
-            'body' => json_encode($payload)
+            'body' => json_encode($payload, JSON_UNESCAPED_UNICODE)
         ]);
     }
 
@@ -160,7 +160,7 @@ class Tracker
             'headers' => [
                 'Content-Type' => 'application/json'
             ],
-            'body' => json_encode($payload)
+            'body' => json_encode($payload, JSON_UNESCAPED_UNICODE)
         ]);
     }
 
