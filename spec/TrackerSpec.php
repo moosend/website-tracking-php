@@ -66,6 +66,34 @@ class TrackerSpec extends ObjectBehavior
         $this->identify($email, $name, $props);
     }
 
+    function it_tracks_asynchronous_identify_events($cookie, $payload, $client)
+    {
+        $email = 'some@mail.com';
+        $name = 'some name';
+        $props = ['color' => 'blue'];
+
+        $encryptedEmail = Encryption::encode($email);
+
+        //stubs
+        $payload->getIdentify($encryptedEmail, $name, $props)->willReturn([
+            'email' => $email,
+            'name' => $name,
+            'properties' => $props,
+        ]);
+
+        $client->post('identify', Argument::type('array'))->willReturn([
+            'success' => 'ok'
+        ]);
+
+        //expectations
+        $payload->getIdentify($encryptedEmail, $name, $props)->shouldBeCalled();
+        $client->post( 'identify', Argument::type('array'))->shouldBeCalled();
+        $client->post( 'identify', Argument::withEntry('future', true))->shouldBeCalled();
+        $cookie->setCookie(CookieNames::USER_EMAIL, $encryptedEmail)->shouldBeCalled();
+
+        $this->identify($email, $name, $props, true);
+    }
+
     function it_tracks_add_to_order_events($payload, $client)
     {
         $itemCode = '123-Code';
@@ -88,6 +116,31 @@ class TrackerSpec extends ObjectBehavior
         $client->post( 'track', Argument::type('array'))->shouldBeCalled();
 
         $this->addToOrder($itemCode, $itemPrice, $itemUrl,$itemQuantity, null, $itemName, $itemImage, $properties);
+    }
+
+    function it_tracks_asynchronous_add_to_order_events($payload, $client)
+    {
+        $itemCode = '123-Code';
+        $itemPrice = 22.45;
+        $itemUrl = 'http://item.com';
+        $itemQuantity = 1;
+        $itemName = 'T-shirt';
+        $itemImage = 'http://item.com/image';
+        $properties = [ 'color' => 'red' ];
+
+        //stubs
+        $payload->getAddToOrder(Argument::type(Product::class))->willReturn([]);
+
+        $client->post( 'track', Argument::type('array'))->willReturn([
+            'success' => 'ok'
+        ]);
+
+        //expectations
+        $payload->getAddToOrder(Argument::type(Product::class))->shouldBeCalled();
+        $client->post( 'track', Argument::type('array'))->shouldBeCalled();
+        $client->post( 'track', Argument::withEntry('future', true))->shouldBeCalled();
+
+        $this->addToOrder($itemCode, $itemPrice, $itemUrl,$itemQuantity, null, $itemName, $itemImage, $properties, true);
     }
 
     function it_throws_exception_if_itemCode_is_empty() {
@@ -154,6 +207,26 @@ class TrackerSpec extends ObjectBehavior
         $this->orderCompleted($order);
     }
 
+    function it_tracks_asynchronous_order_completed_events($payload, $client)
+    {
+        $orderTotal = 120;
+
+        $order = new Order($orderTotal);
+
+        $payload->getOrderCompleted(Argument::type(Order::class))->willReturn([]);
+
+        $client->post( 'track', Argument::type('array'))->willReturn([
+            'success' => 'ok'
+        ]);
+
+        //expectations
+        $payload->getOrderCompleted(Argument::exact($order))->shouldBeCalled();
+        $client->post( 'track', Argument::type('array'))->shouldBeCalled();
+        $client->post( 'track', Argument::withEntry('future', true))->shouldBeCalled();
+
+        $this->orderCompleted($order, true);
+    }
+
     function it_tracks_page_view_events($payload, $client)
     {
         $props = ['color' => 'blue'];
@@ -183,6 +256,25 @@ class TrackerSpec extends ObjectBehavior
         $cookie->setCookie(CookieNames::SITE_ID, 'some-site')->shouldBeCalled();
 
         $this->init('some-site', true);
+    }
+
+    function it_does_an_asynchronous_pageview_request_when_async_is_set_to_true($payload, $client)
+    {
+        $props = ['color' => 'blue'];
+
+        $payload->getPageView('http://google.com', $props)->willReturn([
+            'url' => 'http://google.com',
+            'properties' => $props
+        ]);
+
+        $client->post( 'track', Argument::type('array'))->willReturn([
+            'success' => 'ok'
+        ]);
+        //expectations
+        $payload->getPageView('http://google.com', $props)->shouldBeCalled();
+        $client->post( 'track', Argument::withEntry('future', true))->shouldBeCalled();
+
+        $this->pageView('http://google.com', $props, true);
     }
 
     function it_should_throw_exception_if_campaign_id_has_invalid_uuid() {

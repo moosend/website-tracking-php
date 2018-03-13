@@ -53,12 +53,13 @@ class Tracker
     }
 
     /**
-     * @param $email
-     * @param string $name
+     * @param string $email
+     * @param string string $name
      * @param array $properties
+     * @param bool async
      * @return mixed
      */
-    public function identify($email, $name = '', $properties = [])
+    public function identify($email, $name = '', $properties = [], $async = false)
     {
         $encryptedEmail = Encryption::encode($email);
 
@@ -71,17 +72,19 @@ class Tracker
             'headers' => [
                 'Content-Type' => 'application/json'
             ],
-            'body' => json_encode($payload, JSON_UNESCAPED_UNICODE)
+            'body' => json_encode($payload, JSON_UNESCAPED_UNICODE),
+            'future'    =>  $async
         ]);
     }
 
     /**
-     * @param $url
+     * @param string $url
      * @param array $properties
+     * @param bool async
      * @return mixed
      * @throws \Exception
      */
-    public function pageView($url, $properties = [])
+    public function pageView($url, $properties = [], $async = false)
     {
         $payload = $this->payload->getPageView($url, $properties);
 
@@ -89,12 +92,13 @@ class Tracker
             'headers' => [
                 'Content-Type' => 'application/json'
             ],
-            'body' => json_encode($payload, JSON_UNESCAPED_UNICODE)
+            'body' => json_encode($payload, JSON_UNESCAPED_UNICODE),
+            'future'    =>  $async
         ]);
     }
 
     /**
-     * @param $itemCode
+     * @param string|int $itemCode
      * @param number $itemPrice
      * @param string $itemUrl
      * @param int $itemQuantity
@@ -102,9 +106,10 @@ class Tracker
      * @param string $itemName
      * @param string $itemImage
      * @param array $properties
+     * @param bool $async
      * @return mixed
      */
-    public function addToOrder($itemCode, $itemPrice = 0, $itemUrl, $itemQuantity = 1, $itemTotal = 0, $itemName = '', $itemImage = '', $properties = [])
+    public function addToOrder($itemCode, $itemPrice = 0, $itemUrl, $itemQuantity = 1, $itemTotal = 0, $itemName = '', $itemImage = '', $properties = [], $async = false)
     {
         if (empty($itemCode)) {
             throw new \InvalidArgumentException('$itemCode should not be empty');
@@ -144,15 +149,17 @@ class Tracker
             'headers' => [
                 'Content-Type' => 'application/json'
             ],
-            'body' => json_encode($payload, JSON_UNESCAPED_UNICODE)
+            'body' => json_encode($payload, JSON_UNESCAPED_UNICODE),
+            'future'    =>  $async
         ]);
     }
 
     /**
      * @param Order $order
+     * @param bool $async
      * @return mixed
      */
-    public function orderCompleted(Order $order)
+    public function orderCompleted(Order $order, $async = false)
     {
         $payload = $this->payload->getOrderCompleted($order);
 
@@ -160,7 +167,8 @@ class Tracker
             'headers' => [
                 'Content-Type' => 'application/json'
             ],
-            'body' => json_encode($payload, JSON_UNESCAPED_UNICODE)
+            'body' => json_encode($payload, JSON_UNESCAPED_UNICODE),
+            'future'    =>  $async
         ]);
     }
 
