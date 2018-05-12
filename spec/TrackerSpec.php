@@ -118,6 +118,34 @@ class TrackerSpec extends ObjectBehavior
         $this->addToOrder($itemCode, $itemPrice, $itemUrl,$itemQuantity, null, $itemName, $itemImage, $properties);
     }
 
+    function it_tracks_remove_from_order_events($payload, $client)
+    {
+        $itemCode = '123-Code';
+        $itemPrice = 22.45;
+        $itemUrl = 'http://item.com';
+        $itemTotal = 22.45;
+        $itemName = 'T-shirt';
+        $itemImage = 'http://item.com/image';
+        $properties = [ 'color' => 'red' ];
+
+        $client->post( 'track', Argument::type('array'))->willReturn([
+            'success' => 'ok'
+        ]);
+
+        //expectations
+        $payload->getAddToOrder(Argument::type(Product::class))->shouldBeCalled();
+        $payload->getAddToOrder(Argument::that(function($obj) {
+            $productArray = $obj->toArray();
+            if ($productArray['itemQuantity'] === -1) {
+                return true;
+            };
+            return false;
+        }))->shouldBeCalled();
+        $client->post('track', Argument::type('array'))->shouldBeCalled();
+
+        $this->removeFromOrder($itemCode, $itemPrice, $itemUrl, null, $itemName, $itemImage, $properties);
+    }
+
     function it_tracks_asynchronous_add_to_order_events($payload, $client)
     {
         $itemCode = '123-Code';

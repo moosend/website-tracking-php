@@ -155,6 +155,21 @@ class Tracker
     }
 
     /**
+     * @param string|int $itemCode
+     * @param number $itemPrice
+     * @param string $itemUrl
+     * @param int $itemTotal
+     * @param string $itemName
+     * @param string $itemImage
+     * @param array $properties
+     * @param bool $async
+     * @return mixed
+     */
+    public function removeFromOrder($itemCode, $itemPrice = 0, $itemUrl, $itemTotal = 0, $itemName = '', $itemImage = '', $properties = [], $async = false) {
+        return $this->addToOrder($itemCode, $itemPrice, $itemUrl, -1, $itemTotal, $itemName, $itemImage, $properties, $async);
+    }
+
+    /**
      * @param Order $order
      * @param bool $async
      * @return mixed
