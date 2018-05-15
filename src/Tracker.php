@@ -68,12 +68,11 @@ class Tracker
         //set user email cookie
         $this->cookie->setCookie(CookieNames::USER_EMAIL, $encryptedEmail);
 
-        return $this->client->post('identify', [
+        return $this->client->{$async === true ? 'requestAsync' : 'request'}('POST', 'identify', [
             'headers' => [
                 'Content-Type' => 'application/json'
             ],
-            'body' => json_encode($payload, JSON_UNESCAPED_UNICODE),
-            'future'    =>  $async
+            'body' => json_encode($payload, JSON_UNESCAPED_UNICODE)
         ]);
     }
 
@@ -88,12 +87,11 @@ class Tracker
     {
         $payload = $this->payload->getPageView($url, $properties);
 
-        return $this->client->post('track', [
+        return $this->client->{$async === true ? 'requestAsync' : 'request'}('POST', 'track', [
             'headers' => [
                 'Content-Type' => 'application/json'
             ],
-            'body' => json_encode($payload, JSON_UNESCAPED_UNICODE),
-            'future'    =>  $async
+            'body' => json_encode($payload, JSON_UNESCAPED_UNICODE)
         ]);
     }
 
@@ -145,12 +143,11 @@ class Tracker
 
         $payload = $this->payload->getAddToOrder(new Product($itemCode, $itemPrice, $itemUrl, $itemQuantity, $itemTotal, $itemName, $itemImage, $properties));
 
-        return $this->client->post('track', [
+        return $this->client->{$async === true ? 'requestAsync' : 'request'}('POST', 'track', [
             'headers' => [
                 'Content-Type' => 'application/json'
             ],
-            'body' => json_encode($payload, JSON_UNESCAPED_UNICODE),
-            'future'    =>  $async
+            'body' => json_encode($payload, JSON_UNESCAPED_UNICODE)
         ]);
     }
 
@@ -178,12 +175,11 @@ class Tracker
     {
         $payload = $this->payload->getOrderCompleted($order);
 
-        return $this->client->post( 'track', [
+        return $this->client->{$async === true ? 'requestAsync' : 'request'}('POST', 'track', [
             'headers' => [
                 'Content-Type' => 'application/json'
             ],
-            'body' => json_encode($payload, JSON_UNESCAPED_UNICODE),
-            'future'    =>  $async
+            'body' => json_encode($payload, JSON_UNESCAPED_UNICODE)
         ]);
     }
 
