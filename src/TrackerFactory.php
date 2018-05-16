@@ -1,6 +1,7 @@
 <?php namespace Moosend;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\RequestOptions;
 use Moosend\Utils\Uuid;
 
 /**
@@ -49,10 +50,8 @@ class TrackerFactory
         }
 
         $client = new Client([
-            'base_url' => API::ENDPOINT,
-            'defaults'  =>  [
-                'headers'   =>  $requestHeaders
-            ]
+            'base_uri' => API::ENDPOINT,
+            RequestOptions::HEADERS => $requestHeaders
         ]);
 
         return new Tracker($cookie, $payload, $client);
