@@ -51,7 +51,8 @@ class TrackerFactory
 
         $client = new Client([
             'base_uri' => API::ENDPOINT,
-            RequestOptions::HEADERS => $requestHeaders
+            RequestOptions::HEADERS => $requestHeaders,
+            RequestOptions::HTTP_ERRORS => false
         ]);
 
         return new Tracker($cookie, $payload, $client);
