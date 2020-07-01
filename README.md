@@ -61,3 +61,13 @@ $order->addProduct('itemCode', 'itemPrice', 'itemUrl', 'itemName', 'itemImage', 
 
 $tracker->orderCompleted($order);
 ~~~~
+
+#### Add Subscription Forms
+In order to use Moosend subscription forms feature, you have to append our JS library into your HTML body, preferably in <head>
+
+~~~~
+//example how to embed JS snippet
+<head>
+    <?php echo $tracker->addSubscriptionForms($siteId); ?>
+</head>
+~~~~
