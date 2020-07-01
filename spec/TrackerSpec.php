@@ -326,6 +326,8 @@ class TrackerSpec extends ObjectBehavior
         $this->createOrder(120)->shouldReturnAnInstanceOf("Moosend\Models\Order");
     }
 
-
+    function it_should_render_js_snippet() {
+        $this->addSubscriptionForms('123')->shouldBeNull();
+    }
 }
 
