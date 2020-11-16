@@ -43,6 +43,10 @@ class Tracker
         //store siteId on cookies
         $this->cookie->setCookie(CookieNames::SITE_ID, $siteId);
 
+        if(!empty($this->cookie->getCookie(CookieNames::SESSION_ID))) {
+            $this->cookie->setCookie(CookieNames::SESSION_ID, $this->payload->getSessionId(), time() + 86400);
+        }
+
         //store campaignId on cookies
         $this->storeCampaignIdIfExists();
         if (!$hasUserId || $force) {

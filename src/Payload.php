@@ -27,7 +27,12 @@ class Payload
      */
     private $userId;
 
-    public function __construct(Cookie $cookie, $siteId, $userId)
+    /**
+     * @var
+     */
+    private $sessionId;
+
+    public function __construct(Cookie $cookie, $siteId, $userId, $sessionId)
     {
         if (empty($siteId) || empty($userId)) {
             throw new Exception('$siteId or $userId cannot be empty');
@@ -36,6 +41,7 @@ class Payload
         $this->cookie = $cookie;
         $this->siteId = $siteId;
         $this->userId = $userId;
+        $this->sessionId = $sessionId;
     }
 
     /**
@@ -170,7 +176,8 @@ class Payload
             PayloadProperties::ACTION_TYPE => $actionType,
             PayloadProperties::CONTACT_ID => $this->userId,
             PayloadProperties::SITE_ID => $this->getSiteId(),
-            PayloadProperties::EMAIL => $this->getEmail()
+            PayloadProperties::EMAIL => $this->getEmail(),
+            PayloadProperties::SESSION_ID => $this->getSessionId()
         ];
 
         if ($this->hasCampaignId()) {
@@ -194,5 +201,9 @@ class Payload
     private function getEmail() {
         $email = urlencode(Encryption::decode($this->cookie->getCookie(CookieNames::USER_EMAIL)));
         return rawurldecode($email);
+    }
+
+    public function getSessionId() {
+        return $this->sessionId;
     }
 }

@@ -27,6 +27,7 @@ class TrackerSpec extends ObjectBehavior
         $cookie->getCookie(CookieNames::USER_ID)->shouldBeCalled();
         $cookie->setCookie(CookieNames::SITE_ID, 'some-site')->shouldBeCalled();
         $cookie->setCookie(CookieNames::USER_ID, Argument::type('string'), time() + 60 * 60 * 24 * 3650)->shouldBeCalled();
+        $cookie->getCookie(CookieNames::SESSION_ID)->shouldBeCalled();
 
         $this->init('some-site');
     }

@@ -34,7 +34,10 @@ class TrackerFactory
         $userId = $cookie->getCookie(CookieNames::USER_ID);
         $userId = ! empty($userId) ? $userId : Uuid::v4();
 
-        $payload = new Payload(new Cookie(), $siteId, $userId);
+        $sessionId = $cookie->getCookie(CookieNames::SESSION_ID);
+        $sessionId = ! empty($sessionId) ? $sessionId : Uuid::v4();
+
+        $payload = new Payload(new Cookie(), $siteId, $userId, $sessionId);
 
         $requestHeaders = [];
 

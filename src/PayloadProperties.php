@@ -20,4 +20,5 @@ class PayloadProperties
     const PRODUCT = 'product';
     const CAMPAIGN_ID = 'CampaignId';
     const ORDER_TOTAL_PRICE = 'totalPrice';
+    const SESSION_ID = 'sessionid';
 }

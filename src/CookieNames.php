@@ -7,4 +7,5 @@ class CookieNames
     const USER_EMAIL = 'USER_EMAIL';
     const SITE_ID = 'MOOSEND_SITE_ID';
     const CAMPAIGN_ID = 'CAMPAIGN_ID';
+    const SESSION_ID = 'sessionid';
 }

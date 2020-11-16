@@ -14,11 +14,12 @@ class PayloadSpec extends ObjectBehavior
 {
     function let(Cookie $cookie)
     {
-        $this->beConstructedWith($cookie, 'user1', Uuid::v4());
+        $this->beConstructedWith($cookie, 'user1', Uuid::v4(), Uuid::v4());
 
         $cookie->getCookie(CookieNames::USER_EMAIL)->willReturn('some@mail.com');
         $cookie->getCookie(CookieNames::USER_ID)->willReturn(Uuid::v4());
         $cookie->getCookie(CookieNames::CAMPAIGN_ID)->willReturn(Uuid::v4());
+        $cookie->getCookie(CookieNames::SESSION_ID)->willReturn(Uuid::v4());
     }
 
     function it_is_initializable()
@@ -27,7 +28,7 @@ class PayloadSpec extends ObjectBehavior
     }
 
     function it_should_throw_exception_if_site_id_is_empty(Cookie $cookie) {
-        $this->shouldThrow('\Exception')->during('__construct', [$cookie, null, null]);
+        $this->shouldThrow('\Exception')->during('__construct', [$cookie, null, null, null]);
     }
 
     function it_generates_an_identify_payload_by_e_mail()
