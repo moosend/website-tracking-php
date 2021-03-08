@@ -1,8 +1,4 @@
 <p align="center">
-    <a target="_blank" href="https://www.moosend.com/"><img width="250" class="logo" alt="moosend" src="https://moosend.com/wp-content/themes/moosend_theme/images/moosend_logo_full.svg" scale="0"></a>
-</p>
-
-<p align="center">
     <a href="https://travis-ci.org/moosend/website-tracking-php"><img src="https://travis-ci.org/moosend/website-tracking-php.svg" alt="Build Status"></a>
     <a href="https://packagist.org/packages/moosend/website-tracking"><img src="https://poser.pugx.org/moosend/tracker/v/stable.svg" alt="Latest Stable Version"></a>
     <a href="https://packagist.org/packages/moosend/website-tracking"><img src="https://poser.pugx.org/moosend/tracker/license.svg" alt="License"></a>

@@ -9,7 +9,7 @@ use Prophecy\Argument;
 use Moosend\Cookie;
 use Moosend\CookieNames;
 use Moosend\Utils\Encryption;
-use Psr\Http\Message\ResponseInterface;
+use GuzzleHttp\Promise\Promise;
 
 class TrackerSpec extends ObjectBehavior
 {
@@ -57,9 +57,7 @@ class TrackerSpec extends ObjectBehavior
             'properties' => $props,
         ]);
 
-        $client->request('POST', 'identify', Argument::type('array'))->willReturn([
-            'success' => 'ok'
-        ]);
+        $client->request('POST', 'identify', Argument::type('array'))->shouldBeCalled();
 
         //expectations
         $payload->getIdentify($encryptedEmail, $name, $props)->shouldBeCalled();
@@ -84,9 +82,7 @@ class TrackerSpec extends ObjectBehavior
             'properties' => $props,
         ]);
 
-        $client->requestAsync('POST', 'identify', Argument::type('array'))->willReturn([
-            'success' => 'ok'
-        ]);
+        $client->requestAsync('POST', 'identify', Argument::type('array'))->willReturn(new Promise());
 
         //expectations
         $payload->getIdentify($encryptedEmail, $name, $props)->shouldBeCalled();
@@ -109,9 +105,7 @@ class TrackerSpec extends ObjectBehavior
         //stubs
         $payload->getAddToOrder(Argument::type(Product::class))->willReturn([]);
 
-        $client->request('POST', 'track', Argument::type('array'))->willReturn([
-            'success' => 'ok'
-        ]);
+        //$client->request('POST', 'track', Argument::type('array'))->willReturn();
 
         //expectations
         $payload->getAddToOrder(Argument::type(Product::class))->shouldBeCalled();
@@ -130,9 +124,7 @@ class TrackerSpec extends ObjectBehavior
         $itemImage = 'http://item.com/image';
         $properties = [ 'color' => 'red' ];
 
-        $client->request('POST', 'track', Argument::type('array'))->willReturn([
-            'success' => 'ok'
-        ]);
+        //$client->request('POST', 'track', Argument::type('array'))->willReturn(new Promise());
 
         //expectations
         $payload->getAddToOrder(Argument::type(Product::class))->shouldBeCalled();
@@ -161,9 +153,7 @@ class TrackerSpec extends ObjectBehavior
         //stubs
         $payload->getAddToOrder(Argument::type(Product::class))->willReturn([]);
 
-        $client->requestAsync('POST', 'track', Argument::type('array'))->willReturn([
-            'success' => 'ok'
-        ]);
+        $client->requestAsync('POST', 'track', Argument::type('array'))->willReturn(new Promise());
 
         //expectations
         $payload->getAddToOrder(Argument::type(Product::class))->shouldBeCalled();
@@ -225,9 +215,7 @@ class TrackerSpec extends ObjectBehavior
 
         $payload->getOrderCompleted(Argument::type(Order::class))->willReturn([]);
 
-        $client->request('POST', 'track', Argument::type('array'))->willReturn([
-            'success' => 'ok'
-        ]);
+        //$client->request('POST', 'track', Argument::type('array'))->willReturn(new Promise());
 
         //expectations
         $payload->getOrderCompleted(Argument::exact($order))->shouldBeCalled();
@@ -244,9 +232,7 @@ class TrackerSpec extends ObjectBehavior
 
         $payload->getOrderCompleted(Argument::type(Order::class))->willReturn([]);
 
-        $client->requestAsync('POST', 'track', Argument::type('array'))->willReturn([
-            'success' => 'ok'
-        ]);
+        $client->requestAsync('POST', 'track', Argument::type('array'))->willReturn(new Promise());
 
         //expectations
         $payload->getOrderCompleted(Argument::exact($order))->shouldBeCalled();
@@ -264,9 +250,7 @@ class TrackerSpec extends ObjectBehavior
             'properties' => $props
         ]);
 
-        $client->request('POST', 'track', Argument::type('array'))->willReturn([
-            'success' => 'ok'
-        ]);
+        //$client->request('POST', 'track', Argument::type('array'))->willReturn(new Promise());
 
         //expectations
         $payload->getPageView('http://google.com', $props)->shouldBeCalled();
@@ -297,9 +281,7 @@ class TrackerSpec extends ObjectBehavior
             'properties' => $props
         ]);
 
-        $client->requestAsync('POST', 'track', Argument::type('array'))->willReturn([
-            'success' => 'ok'
-        ]);
+        $client->requestAsync('POST', 'track', Argument::type('array'))->willReturn(new Promise());
         //expectations
         $payload->getPageView('http://google.com', $props)->shouldBeCalled();
         $client->requestAsync('POST', 'track', Argument::type('array'))->shouldBeCalled();
