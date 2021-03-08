@@ -9,6 +9,7 @@ use Prophecy\Argument;
 use Moosend\Cookie;
 use Moosend\CookieNames;
 use Moosend\Utils\Encryption;
+use Psr\Http\Message\ResponseInterface;
 
 class TrackerSpec extends ObjectBehavior
 {
@@ -28,6 +29,7 @@ class TrackerSpec extends ObjectBehavior
         $cookie->setCookie(CookieNames::SITE_ID, 'some-site')->shouldBeCalled();
         $cookie->setCookie(CookieNames::USER_ID, Argument::type('string'), time() + 60 * 60 * 24 * 3650)->shouldBeCalled();
         $cookie->getCookie(CookieNames::SESSION_ID)->shouldBeCalled();
+        $cookie->setCookie(CookieNames::SESSION_ID, "", time() + 86400)->shouldBeCalled();
 
         $this->init('some-site');
     }
@@ -280,6 +282,8 @@ class TrackerSpec extends ObjectBehavior
         $cookie->getCookie(CookieNames::USER_ID)->shouldBeCalled();
         $cookie->setCookie(CookieNames::USER_ID, Argument::type('string'), time() + 60 * 60 * 24 * 3650)->shouldBeCalled();
         $cookie->setCookie(CookieNames::SITE_ID, 'some-site')->shouldBeCalled();
+        $cookie->getCookie(CookieNames::SESSION_ID)->shouldBeCalled();
+        $cookie->setCookie(CookieNames::SESSION_ID, "", time() + 86400)->shouldBeCalled();
 
         $this->init('some-site', true);
     }

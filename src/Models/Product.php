@@ -47,7 +47,7 @@ class Product implements SerializablePayload
      * @param string $itemImage
      * @param array $properties
      */
-    public function __construct($itemCode, $itemPrice = 0, $itemUrl, $itemQuantity = 1, $itemTotalPrice = 0, $itemName = '', $itemImage = '', $properties = [])
+    public function __construct($itemCode, $itemPrice, $itemUrl, $itemQuantity = 1, $itemTotalPrice = 0, $itemName = '', $itemImage = '', $properties = [])
     {
         if (!$itemCode || !$itemUrl) {
             throw new \InvalidArgumentException(PayloadProperties::ITEM_CODE . ' and ' . PayloadProperties::ITEM_URL . ' cannot be empty or null');

@@ -111,7 +111,7 @@ class Tracker
      * @param bool $async
      * @return mixed
      */
-    public function addToOrder($itemCode, $itemPrice = 0, $itemUrl, $itemQuantity = 1, $itemTotal = 0, $itemName = '', $itemImage = '', $properties = [], $async = false)
+    public function addToOrder($itemCode, $itemPrice, $itemUrl, $itemQuantity = 1, $itemTotal = 0, $itemName = '', $itemImage = '', $properties = [], $async = false)
     {
         if (empty($itemCode)) {
             throw new \InvalidArgumentException('$itemCode should not be empty');
@@ -166,7 +166,7 @@ class Tracker
      * @param bool $async
      * @return mixed
      */
-    public function removeFromOrder($itemCode, $itemPrice = 0, $itemUrl, $itemTotal = 0, $itemName = '', $itemImage = '', $properties = [], $async = false) {
+    public function removeFromOrder($itemCode, $itemPrice, $itemUrl, $itemTotal = 0, $itemName = '', $itemImage = '', $properties = [], $async = false) {
         return $this->addToOrder($itemCode, $itemPrice, $itemUrl, -1, $itemTotal, $itemName, $itemImage, $properties, $async);
     }
 
