@@ -258,8 +258,10 @@ class Tracker
      * @return string
      */
     private function getEmail() {
-        $email = urlencode(Encryption::decode($this->cookie->getCookie(CookieNames::USER_EMAIL)));
-        return rawurldecode($email);
+        $email = Encryption::decode($this->cookie->getCookie(CookieNames::USER_EMAIL));
+        if(is_null($email)) return '';
+        $emailEncoded = urlencode($email);
+        return rawurldecode($emailEncoded);
     }
 
     /**
