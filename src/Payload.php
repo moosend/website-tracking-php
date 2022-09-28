@@ -199,9 +199,9 @@ class Payload
      * @return string
      */
     private function getEmail() {
-        $email = Encryption::decode($this->cookie->getCookie(CookieNames::USER_EMAIL));
+        $email = $this->cookie->getCookie(CookieNames::USER_EMAIL);
         if(is_null($email)) return '';
-        $emailEncoded = urlencode($email);
+        $emailEncoded = urlencode(Encryption::decode($email));
         return rawurldecode($emailEncoded);
     }
 
