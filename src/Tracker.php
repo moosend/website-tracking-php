@@ -71,13 +71,14 @@ class Tracker
 
         //set user email cookie
         $this->cookie->setCookie(CookieNames::USER_EMAIL, $encryptedEmail);
-
-        return $this->client->{$async === true ? 'requestAsync' : 'request'}('POST', 'identify', [
-            'headers' => [
-                'Content-Type' => 'application/json'
-            ],
-            'body' => json_encode($payload, JSON_UNESCAPED_UNICODE)
-        ]);
+        try{
+            return $this->client->{$async === true ? 'requestAsync' : 'request'}('POST', 'identify', [
+                'headers' => [
+                    'Content-Type' => 'application/json'
+                ],
+                'body' => json_encode($payload, JSON_UNESCAPED_UNICODE)
+            ]);
+        } catch(\Exception $e){return "";}
     }
 
     /**
@@ -90,13 +91,14 @@ class Tracker
     public function pageView($url, $properties = [], $async = false)
     {
         $payload = $this->payload->getPageView($url, $properties);
-
-        return $this->client->{$async === true ? 'requestAsync' : 'request'}('POST', 'track', [
-            'headers' => [
-                'Content-Type' => 'application/json'
-            ],
-            'body' => json_encode($payload, JSON_UNESCAPED_UNICODE)
-        ]);
+        try{
+            return $this->client->{$async === true ? 'requestAsync' : 'request'}('POST', 'track', [
+                'headers' => [
+                    'Content-Type' => 'application/json'
+                ],
+                'body' => json_encode($payload, JSON_UNESCAPED_UNICODE)
+            ]);
+        } catch(\Exception $e){return "";}
     }
 
     /**
@@ -146,13 +148,14 @@ class Tracker
         }
 
         $payload = $this->payload->getAddToOrder(new Product($itemCode, $itemPrice, $itemUrl, $itemQuantity, $itemTotal, $itemName, $itemImage, $properties));
-
-        return $this->client->{$async === true ? 'requestAsync' : 'request'}('POST', 'track', [
-            'headers' => [
-                'Content-Type' => 'application/json'
-            ],
-            'body' => json_encode($payload, JSON_UNESCAPED_UNICODE)
-        ]);
+        try{
+            return $this->client->{$async === true ? 'requestAsync' : 'request'}('POST', 'track', [
+                'headers' => [
+                    'Content-Type' => 'application/json'
+                ],
+                'body' => json_encode($payload, JSON_UNESCAPED_UNICODE)
+            ]);
+        } catch(\Exception $e){return "";}
     }
 
     /**
@@ -167,7 +170,9 @@ class Tracker
      * @return mixed
      */
     public function removeFromOrder($itemCode, $itemPrice, $itemUrl, $itemTotal = 0, $itemName = '', $itemImage = '', $properties = [], $async = false) {
-        return $this->addToOrder($itemCode, $itemPrice, $itemUrl, -1, $itemTotal, $itemName, $itemImage, $properties, $async);
+        try{    
+            return $this->addToOrder($itemCode, $itemPrice, $itemUrl, -1, $itemTotal, $itemName, $itemImage, $properties, $async);
+        } catch(\Exception $e){return "";}
     }
 
     /**
@@ -178,13 +183,14 @@ class Tracker
     public function orderCompleted(Order $order, $async = false)
     {
         $payload = $this->payload->getOrderCompleted($order);
-
-        return $this->client->{$async === true ? 'requestAsync' : 'request'}('POST', 'track', [
-            'headers' => [
-                'Content-Type' => 'application/json'
-            ],
-            'body' => json_encode($payload, JSON_UNESCAPED_UNICODE)
-        ]);
+        try{
+            return $this->client->{$async === true ? 'requestAsync' : 'request'}('POST', 'track', [
+                'headers' => [
+                    'Content-Type' => 'application/json'
+                ],
+                'body' => json_encode($payload, JSON_UNESCAPED_UNICODE)
+            ]);
+        } catch(\Exception $e){return "";}
     }
 
     /**
